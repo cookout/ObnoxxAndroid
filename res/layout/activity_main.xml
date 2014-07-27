@@ -1,0 +1,77 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.record.MainActivity"
+    tools:ignore="MergeRootFrame" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+    
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal">
+	
+	        <Button
+	            android:id="@+id/btnRecord"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="Record" />
+	
+	        <Button
+	            android:id="@+id/btnPlay"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="Play" />
+	    </LinearLayout>
+	    
+		<RadioGroup
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical"
+	        android:id="@+id/radio_group1">
+	        <RadioButton
+	            android:id="@+id/radio_1"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Jon"
+	            android:checked="true"
+	            android:textColor="#f00"/>
+	        <RadioButton
+	            android:id="@+id/radio_2"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Chandra"
+	            android:textColor="#0f0" />
+	        <RadioButton
+	            android:id="@+id/radio_3"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Oliver"
+	            android:textColor="#00f" />
+	    </RadioGroup>
+	    
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal">
+	
+	        <Button
+	            android:id="@+id/btnSend"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="Send" />
+	
+	
+	    </LinearLayout>
+	
+    </LinearLayout>
+
+</FrameLayout>
