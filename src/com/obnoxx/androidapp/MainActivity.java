@@ -50,9 +50,12 @@ public class MainActivity extends FragmentActivity {
         Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
         
         if (fragment == null) {
-        	fragment = new RecordFragment();
+        	Fragment recordFragment, sendFragment;
+        	recordFragment = new RecordFragment();
+        	sendFragment = new SendFragment();
         	fm.beginTransaction()
-        		.add(R.id.fragmentContainer, fragment)
+        		.add(R.id.fragmentContainer, recordFragment)
+        		.add(R.id.fragmentContainer, sendFragment)
         		.commit();
         }
         /*
