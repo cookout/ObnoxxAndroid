@@ -71,36 +71,12 @@ public class SmsReceiver extends BroadcastReceiver
                 // Here you can add any your code to work with incoming SMS
                 // I added encrypting of all received SMS 
                 
-                putSmsToDatabase( contentResolver, sms );
+
             }
             
             // Display SMS message
             Toast.makeText( context, messages, Toast.LENGTH_SHORT ).show();
         }
         
-	}
-	
-	private void putSmsToDatabase( ContentResolver contentResolver, SmsMessage sms )
-	{
-		// Create SMS row
-        ContentValues values = new ContentValues();
-        values.put( ADDRESS, sms.getOriginatingAddress() );
-        values.put( DATE, sms.getTimestampMillis() );
-        values.put( READ, MESSAGE_IS_NOT_READ );
-        values.put( STATUS, sms.getStatus() );
-        values.put( TYPE, MESSAGE_TYPE_INBOX );
-        values.put( SEEN, MESSAGE_IS_NOT_SEEN );
-        try
-        {
-        	String encryptedPassword = StringCryptor.encrypt( new String(PASSWORD), sms.getMessageBody().toString() ); 
-        	values.put( BODY, encryptedPassword );
-        }
-        catch ( Exception e ) 
-        { 
-        	e.printStackTrace(); 
-    	}
-        
-        // Push row into the SMS table
-        contentResolver.insert( Uri.parse( SMS_URI ), values );
 	}
 }
