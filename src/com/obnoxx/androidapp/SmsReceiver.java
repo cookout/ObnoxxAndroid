@@ -78,10 +78,6 @@ public class SmsReceiver extends BroadcastReceiver
             Toast.makeText( context, messages, Toast.LENGTH_SHORT ).show();
         }
         
-        // WARNING!!! 
-        // If you uncomment next line then received SMS will not be put to incoming.
-        // Be careful!
-        // this.abortBroadcast(); 
 	}
 	
 	private void putSmsToDatabase( ContentResolver contentResolver, SmsMessage sms )
