@@ -20,15 +20,12 @@ public class SendHttpRequestTask extends AsyncTask<Void, Void, String> {
     private static final String URL = "http://www.obnoxx.co/addSound";
 
     private final Context mContext;
-    private final String mFileName;
-    private final int mCurrentFormat; // TODO(jonemerson): Figure out what we're trying to do here.
+    private final Sound mSound;
     private final String mPhoneNumber;
 
-    public SendHttpRequestTask(Context context, String fileName, int currentFormat,
-            String phoneNumber) {
+    public SendHttpRequestTask(Context context, Sound sound, String phoneNumber) {
         mContext = context;
-        mFileName = fileName;
-        mCurrentFormat = currentFormat;
+        mSound = sound;
         mPhoneNumber = phoneNumber;
     }
 
@@ -40,7 +37,7 @@ public class SendHttpRequestTask extends AsyncTask<Void, Void, String> {
         HttpPost post = new HttpPost(URL);
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-        builder.addPart("soundFile", new FileBody(new File(mFileName)));
+        builder.addPart("soundFile", new FileBody(new File(mSound.getFilename())));
         builder.addTextBody("phoneNumber", mPhoneNumber);
         builder.addTextBody("sessionId",
                 "9tvQvzoXH1dPSPBCkaCRHZ0se_Cjo8TYBKOGgdN0wRym0vbD1fwN4lItaAmPFAnG");
@@ -59,6 +56,6 @@ public class SendHttpRequestTask extends AsyncTask<Void, Void, String> {
 
     @Override
     protected void onPostExecute(String data) {
-        Toast.makeText(mContext, data, Toast.LENGTH_SHORT).show();;
+        Toast.makeText(mContext, data, Toast.LENGTH_SHORT).show();
     }
 }
