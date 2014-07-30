@@ -12,8 +12,7 @@ apply plugin: 'android'
 
 android {
     compileSdkVersion 20
-    buildToolsVersion "20"
-
+    buildToolsVersion '20'
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -24,6 +23,13 @@ android {
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
         }
+    }
+    defaultConfig {}
+    productFlavors {
+    }
+    buildTypes {
+    }
+    compileOptions {
     }
 }
 
