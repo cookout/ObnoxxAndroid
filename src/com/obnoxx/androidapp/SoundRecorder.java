@@ -56,26 +56,20 @@ public class SoundRecorder {
         }
 
         mCurrentFilename = getNewFilename();
+        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mMediaRecorder.setOutputFile(mCurrentFilename);
+        mMediaRecorder.setMaxDuration(3 * 1000);
+        mMediaRecorder.setOnInfoListener(mInfoListener);
+        mMediaRecorder.setOnErrorListener(mErrorListener);
         try {
-            // Initialize.
-            mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-
-            // DataSourceConfigure.
-            mMediaRecorder.setOutputFormat(OUTPUT_FORMATS[mCurrentFormat]);
-            mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            mMediaRecorder.setOnErrorListener(mErrorListener);
-            mMediaRecorder.setOnInfoListener(mInfoListener);
-            mMediaRecorder.setOutputFile(mCurrentFilename);
-            mMediaRecorder.setMaxDuration(3 * 1000);
-
-            // Prepare.
             mMediaRecorder.prepare();
-            mMediaRecorder.start();
-        } catch (IllegalStateException e) {
-            throw new SoundRecordingException(e);
         } catch (IOException e) {
-            throw new SoundRecordingException(e);
+            throw new RuntimeException(e);
         }
+        mMediaRecorder.start();   // Recording is now started
+        Toast.makeText(mAppContext, "Recording started!", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -100,6 +94,8 @@ public class SoundRecorder {
     }
 
     private String getNewFilename() {
+        // TODO(jonemerson): Is this the right directory for storing our private files?  Make sure
+        // there isn't a more private place.
         File file = new File(Environment.getExternalStorageDirectory().getPath(),
                 AUDIO_RECORDER_FOLDER);
         if (!file.exists()) {
@@ -120,9 +116,11 @@ public class SoundRecorder {
         @Override
         public void onInfo(MediaRecorder mr, int what, int extra) {
             if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+                Toast.makeText(SoundRecorder.this.mAppContext, "Recording ended!",
+                        Toast.LENGTH_SHORT).show();
+                mMediaRecorder.reset();
                 SoundRecorder.this.sounds.add(new Sound(mCurrentFilename));
                 mCurrentFilename = null;
-                Toast.makeText(mAppContext, "Recorded!", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(mAppContext, "Info: " + what + ", " + extra, Toast.LENGTH_SHORT)
                         .show();

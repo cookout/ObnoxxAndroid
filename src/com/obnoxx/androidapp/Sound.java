@@ -1,7 +1,6 @@
 package com.obnoxx.androidapp;
 
 import android.media.MediaPlayer;
-import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -28,9 +27,9 @@ public class Sound {
         try {
             mPlayer.setDataSource(mFilename);
             mPlayer.prepare();
+            mPlayer.start();
         } catch (IOException e) {
-            throw new RuntimeException("Error playing back sound", e);
+            throw new RuntimeException(e);
         }
-        mPlayer.start();
     }
 }
