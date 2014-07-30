@@ -2,18 +2,23 @@ package com.obnoxx.androidapp;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.widget.Toast;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class SendHttpRequestTask extends AsyncTask<Void, Void, String> {
+    private static final String URL = "http://www.obnoxx.co/addSound";
+
     private final Context mContext;
     private final String mFileName;
     private final int mCurrentFormat; // TODO(jonemerson): Figure out what we're trying to do here.
@@ -29,76 +34,27 @@ public class SendHttpRequestTask extends AsyncTask<Void, Void, String> {
 
     @Override
     protected String doInBackground(Void... params) {
-        HttpURLConnection connection = null;
-        DataOutputStream outputStream = null;
-        DataInputStream inputStream = null;
-        String urlServer = "http://www.obnoxx.co/addSound";
-        String lineEnd = "\r\n";
-        String twoHyphens = "--";
-        String boundary = "*****";
+        ContentType foo = ContentType.APPLICATION_ATOM_XML;
 
-        int bytesRead, bytesAvailable, bufferSize;
-        byte[] buffer;
-        int maxBufferSize = 1 * 1024 * 1024;
-        String serverResponseMessage = null;
+        HttpClient client = new DefaultHttpClient();
+        HttpPost post = new HttpPost(URL);
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+        builder.addPart("soundFile", new FileBody(new File(mFileName)));
+        builder.addTextBody("phoneNumber", mPhoneNumber);
+        builder.addTextBody("sessionId",
+                "9tvQvzoXH1dPSPBCkaCRHZ0se_Cjo8TYBKOGgdN0wRym0vbD1fwN4lItaAmPFAnG");
+        post.setEntity(builder.build());
 
+        HttpResponse response;
         try {
-            FileInputStream fileInputStream = new FileInputStream(new File(mFileName));
-            URL url = new URL(urlServer);
-
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-            connection.setUseCaches(false);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type",
-                    "multipart/form-data;boundary=" + boundary);
-
-            outputStream = new DataOutputStream(connection.getOutputStream());
-            outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-            outputStream.write("Content-Type: text/plain\r\n".getBytes());
-            outputStream.write("Content-Disposition: form-data; name=\"sessionId\"\r\n".getBytes());
-            outputStream.write("\r\n9tvQvzoXH1dPSPBCkaCRHZ0se_Cjo8TYBKOGgdN0wRym0vbD1fwN4lItaAmPFAnG\r\n".getBytes());
-
-            outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-            outputStream.write("Content-Type: text/plain\r\n".getBytes());
-            outputStream.write("Content-Disposition: form-data; name=\"phoneNumber\"\r\n".getBytes());
-            outputStream.write(("\r\n" + mPhoneNumber + "\r\n").getBytes());
-
-            outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-            outputStream.write("Content-Disposition: form-data; name=\"soundFile\"; filename=\"test\"\r\n".getBytes());
-            outputStream.write("Content-Type: application/octet-stream\r\n".getBytes());
-            outputStream.write("Content-Transfer-Encoding: binary\r\n".getBytes());
-            outputStream.write("\r\n".getBytes());
-
-            bytesAvailable = fileInputStream.available();
-            bufferSize = Math.min(bytesAvailable, maxBufferSize);
-            buffer = new byte[bufferSize];
-
-            // Read file
-            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-            while (bytesRead > 0) {
-                outputStream.write(buffer, 0, bufferSize);
-                bytesAvailable = fileInputStream.available();
-                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-            }
-
-            outputStream.writeBytes(lineEnd);
-            outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-
-            // Responses from the server (code and message)
-            serverResponseMessage = connection.getResponseMessage();
-
-            fileInputStream.close();
-            outputStream.flush();
-            outputStream.close();
-        } catch (IOException ex) {
-            // TODO(jon): Implement retry / user notification of error (maybe a Toast?).
-            throw new RuntimeException(ex);
+            response = client.execute(post);
+        } catch (IOException e) {
+            // TODO(jonemerson): Add error handling.
+            throw new RuntimeException(e);
         }
-        return (serverResponseMessage != null) ? serverResponseMessage : "error";
+
+        return response.getStatusLine().getStatusCode() == 200 ? "ok" : "error";
     }
 
     @Override

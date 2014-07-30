@@ -31,10 +31,21 @@ android {
     }
     compileOptions {
     }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
+}
+
+repositories{
+    mavenCentral()
 }
 
 dependencies {
     // Support Libraries
     compile 'com.android.support:appcompat-v7:20.+'
+    compile 'org.apache.httpcomponents:httpcore:4.3+'
+    compile 'org.apache.httpcomponents:httpmime:4.3+'
     compile 'com.google.android.gms:play-services:5.0.77'
 }
