@@ -36,20 +36,20 @@
             android:orientation="vertical"
             android:id="@+id/radio_group1">
             <RadioButton
-                android:id="@+id/radio_1"
+                android:id="@+id/radio_jon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Jon"
                 android:checked="true"
                 android:textColor="#f00"/>
             <RadioButton
-                android:id="@+id/radio_2"
+                android:id="@+id/radio_chandra"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Chandra"
                 android:textColor="#0f0" />
             <RadioButton
-                android:id="@+id/radio_3"
+                android:id="@+id/radio_oliver"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Oliver"

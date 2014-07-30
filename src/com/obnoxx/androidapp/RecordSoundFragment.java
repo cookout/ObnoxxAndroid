@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import java.io.File;
@@ -137,8 +138,19 @@ public class RecordSoundFragment extends Fragment {
 
     private void send() {
         SendHttpRequestTask t = new SendHttpRequestTask(
-                this.getActivity(), getFilename(), mCurrentFormat);
+                this.getActivity(), getFilename(), mCurrentFormat, getSelectedPhoneNumber());
         t.execute();
+    }
+
+    private String getSelectedPhoneNumber() {
+        if (((RadioButton) getActivity().findViewById((R.id.radio_jon))).isChecked()) {
+            return "+14157068528";
+        } else if (((RadioButton) getActivity().findViewById((R.id.radio_chandra))).isChecked()) {
+            return "+16507205269";
+        } else if (((RadioButton) getActivity().findViewById((R.id.radio_oliver))).isChecked()) {
+            return "+14153163345";
+        }
+        throw new IllegalStateException("Should not happen");
     }
 
     private MediaRecorder.OnErrorListener mErrorListener = new MediaRecorder.OnErrorListener() {

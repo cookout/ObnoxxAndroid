@@ -17,11 +17,14 @@ public class SendHttpRequestTask extends AsyncTask<Void, Void, String> {
     private final Context mContext;
     private final String mFileName;
     private final int mCurrentFormat; // TODO(jonemerson): Figure out what we're trying to do here.
+    private final String mPhoneNumber;
 
-    public SendHttpRequestTask(Context context, String fileName, int currentFormat) {
+    public SendHttpRequestTask(Context context, String fileName, int currentFormat,
+            String phoneNumber) {
         mContext = context;
         mFileName = fileName;
         mCurrentFormat = currentFormat;
+        mPhoneNumber = phoneNumber;
     }
 
     @Override
@@ -60,7 +63,7 @@ public class SendHttpRequestTask extends AsyncTask<Void, Void, String> {
             outputStream.writeBytes(twoHyphens + boundary + lineEnd);
             outputStream.write("Content-Type: text/plain\r\n".getBytes());
             outputStream.write("Content-Disposition: form-data; name=\"phoneNumber\"\r\n".getBytes());
-            outputStream.write("\r\n4153163345\r\n".getBytes());
+            outputStream.write(("\r\n" + mPhoneNumber + "\r\n").getBytes());
 
             outputStream.writeBytes(twoHyphens + boundary + lineEnd);
             outputStream.write("Content-Disposition: form-data; name=\"soundFile\"; filename=\"test\"\r\n".getBytes());
