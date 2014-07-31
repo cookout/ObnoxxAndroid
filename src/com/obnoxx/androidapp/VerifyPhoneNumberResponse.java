@@ -7,6 +7,7 @@ public class VerifyPhoneNumberResponse {
     private int mStatusCode = 0;
     private String mTemporaryUserCode = null;
     private String mSessionId = null;
+    private User mUser = null;
 
     public VerifyPhoneNumberResponse(String json) {
         mStatusCode = 200;
@@ -15,6 +16,7 @@ public class VerifyPhoneNumberResponse {
             JSONObject jsonObject = new JSONObject(json);
             mTemporaryUserCode = jsonObject.optString("temporaryUserCode");
             mSessionId = jsonObject.optString("sessionId");
+            mUser = jsonObject.has("user") ? new User(jsonObject.optString("user")) : null;
         } catch (JSONException e) {
             mStatusCode = 600;
             return;
@@ -35,5 +37,9 @@ public class VerifyPhoneNumberResponse {
 
     public String getSessionId() {
         return mSessionId;
+    }
+
+    public User getUser() {
+        return mUser;
     }
 }

@@ -94,9 +94,9 @@ public class VerifyPhoneNumberFragment extends Fragment {
                                 new VerifyPhoneNumberTask(appContext, verificationCodeText,
                                         mTemporaryUserCode) {
                                     @Override
-                                    public void onPostExecute(VerifyPhoneNumberResponse result) {
-                                        if (result.getStatusCode() == 200) {
-                                            setSessionId(result.getSessionId());
+                                    public void onPostExecute(VerifyPhoneNumberResponse response) {
+                                        if (response.getStatusCode() == 200) {
+                                            login(response);
                                         } else {
                                             Toast.makeText(appContext, "Error, try again",
                                                     Toast.LENGTH_SHORT).show();
@@ -108,6 +108,14 @@ public class VerifyPhoneNumberFragment extends Fragment {
                     }
                 }
         );
+
+        ((Button) v.findViewById(R.id.verification_code_back_button)).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        setMode(MODE_PHONE_NUMBER);
+                    }
+                });
     }
 
     private EditText getPhoneNumberText() {
@@ -133,8 +141,13 @@ public class VerifyPhoneNumberFragment extends Fragment {
         }
     }
 
-    private void setSessionId(String sessionId) {
-        CurrentUser.setSessionId(this.getActivity(), sessionId);
+    private void login(VerifyPhoneNumberResponse response) {
+        CurrentUser.setUser(this.getActivity(), response.getUser());
+
+        // Set the session ID last, since its presence indicates that the user has
+        // successfully logged in and other fields (e.g. user) have been populated.
+        CurrentUser.setSessionId(this.getActivity(), response.getSessionId());
+
         startActivity(new Intent(this.getActivity(), RecordSoundActivity.class));
     }
 }

@@ -72,6 +72,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Submit" />
+
+            <Button
+                android:id="@+id/verification_code_back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back" />
         </LinearLayout>
     </LinearLayout>
 
