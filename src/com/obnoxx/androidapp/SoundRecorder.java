@@ -19,20 +19,10 @@ public class SoundRecorder {
     private static final String TAG = "SoundRecorder";
 
     private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
-    private static int OUTPUT_FORMATS[] = {
-            MediaRecorder.OutputFormat.MPEG_4,
-            MediaRecorder.OutputFormat.THREE_GPP
-    };
     private static final String AUDIO_RECORDER_FILE_EXT_3GP = ".3gp";
-    private static final String AUDIO_RECORDER_FILE_EXT_MP4 = ".mp4";
-    private static String FILE_EXTENSIONS[] = {
-            AUDIO_RECORDER_FILE_EXT_MP4,
-            AUDIO_RECORDER_FILE_EXT_3GP
-    };
 
     private final Context mAppContext;
     private MediaRecorder mMediaRecorder = null;
-    private int mCurrentFormat = 0; // TODO(jonemerson): Figure out what we're trying to do here.
     private boolean mIsStarted = false;
     private String mCurrentFilename = null;
     private List<Sound> sounds = new ArrayList<Sound>();
@@ -93,7 +83,7 @@ public class SoundRecorder {
         return sounds.size() > 0 ? sounds.get(sounds.size() - 1) : null;
     }
 
-    private String getNewFilename() {
+    public static String getNewFilename() {
         // TODO(jonemerson): Is this the right directory for storing our private files?  Make sure
         // there isn't a more private place.
         File file = new File(Environment.getExternalStorageDirectory().getPath(),
@@ -102,7 +92,7 @@ public class SoundRecorder {
             file.mkdirs();
         }
         return (file.getAbsolutePath() + "/audio" + System.currentTimeMillis() +
-                FILE_EXTENSIONS[mCurrentFormat]);
+                AUDIO_RECORDER_FILE_EXT_3GP);
     }
 
     private MediaRecorder.OnErrorListener mErrorListener = new MediaRecorder.OnErrorListener() {

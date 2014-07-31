@@ -22,6 +22,8 @@ public class Sound {
     public void play() {
         if (mPlayer == null) {
             mPlayer = new MediaPlayer();
+        } else {
+            mPlayer.reset();
         }
 
         try {
