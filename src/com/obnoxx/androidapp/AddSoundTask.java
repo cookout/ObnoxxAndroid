@@ -16,6 +16,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * This task handles the uploading of a {@code sound} to the Cookout server,
+ * which will then inform {@code phoneNumber} that there is a sound for them
+ * to hear.
+ */
 public class AddSoundTask extends AsyncTask<Void, Void, String> {
     private static final String URL = "http://www.obnoxx.co/addSound";
 

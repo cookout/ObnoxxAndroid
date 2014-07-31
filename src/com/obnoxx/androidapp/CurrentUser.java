@@ -61,6 +61,10 @@ public class CurrentUser {
     /**
      * Makes sure this device is registered with Google to receive Obnoxx
      * push notifications.
+     * NOTE(jonemerson): This logic probably belongs somewhere else.
+     * TODO(jonemerson): Make sure the server agrees that the registration ID
+     *     stored in user prefs is valid.  Because if it doesn't, there ain't
+     *     no notifications coming this way.
      */
     public static void maybeFetchRegistrationId(final Context appContext) {
         // If we don't have a registration ID, let's go get one for this device.

@@ -8,6 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+/**
+ * The initial fragment for Obnoxx.  Basically just acts as air-traffic control
+ * and sends the user to login or the main application depending on whether
+ * he has logged in before.
+ */
 public class InitFragment extends Fragment {
     private static final String TAG = "InitFragment";
 

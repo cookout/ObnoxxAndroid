@@ -10,6 +10,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Data object representing a user, who may or may not be the current user.
+ * Ultimately the client will have a database-backed cache of all the Users
+ * he has shared sounds with, and those Users will be represented in memory
+ * with this object.
+ */
 public class User {
     private static final String TAG = "User";
 

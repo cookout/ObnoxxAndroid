@@ -8,6 +8,14 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.IOException;
 
+/**
+ * This task registers this Android device with Google's GCM service to receive
+ * push notifications.  The registration ID that GCM returns must be then passed
+ * to our server so that it can talk to GCM and send messages to this device.
+ *
+ * To use this class, extend it to override {@code onPostExecute}.  The String
+ * passed to it is the GCM registration ID for this device.
+ */
 public class GetRegistrationIdTask extends AsyncTask<Void, Void, String> {
     private static final String TAG = "GetRegistrationIdTask";
     private static GoogleCloudMessaging sGcm;

@@ -7,6 +7,12 @@ import android.support.v4.app.FragmentManager;
 import android.view.Window;
 import android.view.WindowManager;
 
+/**
+ * Abstract top-level Activity class that helps with the construction of
+ * Fragment-based activities.  Basically just constructs the underlying
+ * Fragment, as specified in the subclass by createFragment, and then
+ * uses it as the entire view's controller.
+ */
 public abstract class SingleFragmentActivity extends FragmentActivity {
     protected abstract Fragment createFragment();
 

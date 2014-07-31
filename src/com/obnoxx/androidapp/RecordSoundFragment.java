@@ -11,6 +11,10 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+/**
+ * Implements the sound recording interface.  Lets the user record a sound,
+ * play it back, and choose people to share it with.
+ */
 public class RecordSoundFragment extends Fragment {
     private static final String TAG = "RecordSoundFragment";
 

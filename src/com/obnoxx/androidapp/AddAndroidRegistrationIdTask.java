@@ -19,6 +19,12 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+/**
+ * This task informs CookoutServer that this Android device has registered
+ * itself for GCM locations and the registration ID it got from GCM was
+ * {@code registrationId}.  CookoutServer then records that registration ID
+ * and uses it to send this user push notifications (e.g. sounds for them).
+ */
 public class AddAndroidRegistrationIdTask extends AsyncTask<Void, Void, Boolean> {
     private static final String TAG = "AddAndroidRegistrationIdTask";
     private static final String URL = "http://www.obnoxx.co/addAndroidRegistrationId";
