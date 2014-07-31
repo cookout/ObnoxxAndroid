@@ -1,11 +1,7 @@
 package com.obnoxx.androidapp;
 
 import android.app.Activity;
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,8 +10,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.Toast;
-
-import java.io.IOException;
 
 public class RecordSoundFragment extends Fragment {
     private static final String TAG = "RecordSoundFragment";
@@ -50,8 +44,6 @@ public class RecordSoundFragment extends Fragment {
                 case R.id.btnRecord:
                     try {
                         mSoundRecorder.start();
-                        Toast.makeText(RecordSoundFragment.this.getActivity(), "Start Recording",
-                                Toast.LENGTH_SHORT).show();
                     } catch (SoundRecordingException e) {
                         Log.e(TAG, "Could not start recording", e);
                     }

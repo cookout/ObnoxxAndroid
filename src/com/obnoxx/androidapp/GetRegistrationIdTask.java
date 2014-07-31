@@ -34,16 +34,8 @@ public class GetRegistrationIdTask extends AsyncTask<Void, Void, String> {
             String registrationId = sGcm.register(SENDER_ID);
             msg = "Device registered, registration ID=" + registrationId;
 
-            // You should send the registration ID to your server over HTTP,
-            // so it can use GCM/HTTP or CCS to send messages to your app.
-            // The request to your server should be authenticated if your app
-            // is using accounts.
-            AddAndroidRegistrationIdTask t =
-                    new AddAndroidRegistrationIdTask(mContext, registrationId);
-            t.execute();
-
             // Pass back the registration ID so that the person who invoked this task
-            // can commit it to shared preferences.
+            // can commit it to the server and shared preferences.
             return registrationId;
 
         } catch (IOException e) {

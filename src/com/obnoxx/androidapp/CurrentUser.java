@@ -45,7 +45,7 @@ public class CurrentUser {
         editor.commit();
     }
 
-    public static void setUser(final Context appContext, User user) {
+    public static void setUser(Context appContext, User user) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
         SharedPreferences.Editor editor = prefs.edit();
         try {
@@ -55,14 +55,35 @@ public class CurrentUser {
             Log.w(TAG, "Could not save user", e);
         }
 
-        if (getRegistrationId(appContext) == null) {
-            GetRegistrationIdTask t = new GetRegistrationIdTask(appContext) {
+        maybeFetchRegistrationId(appContext);
+    }
+
+    /**
+     * Makes sure this device is registered with Google to receive Obnoxx
+     * push notifications.
+     */
+    public static void maybeFetchRegistrationId(final Context appContext) {
+        // If we don't have a registration ID, let's go get one for this device.
+        if (getUser(appContext) != null &&
+                getRegistrationId(appContext) == null) {
+            new GetRegistrationIdTask(appContext) {
                 @Override
-                protected void onPostExecute(String registrationId) {
-                    setRegistrationId(appContext, registrationId);
+                protected void onPostExecute(final String registrationId) {
+                    // Now we have to save the registration ID to the backend, so
+                    // that it can actually send us push notifications.
+                    new AddAndroidRegistrationIdTask(appContext, registrationId) {
+                        @Override
+                        protected void onPostExecute(Boolean b) {
+                            // Now that we know everything went hunky-dory,
+                            // save the registration ID locally so that we
+                            // know we've registered.
+                            if (Boolean.TRUE.equals(b)) {
+                                setRegistrationId(appContext, registrationId);
+                            }
+                        }
+                    }.execute();
                 }
-            };
-            t.execute();
+            }.execute();
         }
     }
 
@@ -70,6 +91,7 @@ public class CurrentUser {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("registrationId", registrationId);
+        editor.putInt("appVersion", getAppVersion(appContext));
         editor.commit();
     }
 
@@ -81,11 +103,11 @@ public class CurrentUser {
      * @return registration ID, or empty string if there is no existing
      *         registration ID.
      */
-    public static String getRegistrationId(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static String getRegistrationId(Context appContext) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
         String registrationId = prefs.getString("registrationId", null);
         if (registrationId == null) {
-            Log.i(TAG, "Registration not found.");
+            Log.i(TAG, "GCM registration not found.");
             return null;
         }
 
@@ -93,10 +115,10 @@ public class CurrentUser {
         // since the existing regID is not guaranteed to work with the new
         // app version.
         int registeredVersion = prefs.getInt("appVersion", Integer.MIN_VALUE);
-        int currentVersion = getAppVersion(context);
+        int currentVersion = getAppVersion(appContext);
         if (registeredVersion != currentVersion) {
-            Log.i(TAG, "App version changed.");
-            return "";
+            Log.i(TAG, "App version changed - discarding existing GCM registration ID.");
+            return null;
         }
         return registrationId;
     }
