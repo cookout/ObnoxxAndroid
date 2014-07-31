@@ -39,8 +39,6 @@ public class AddDeviceRegistrationIdTask extends AsyncTask<Void, Void, Boolean> 
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        ContentType foo = ContentType.APPLICATION_ATOM_XML;
-
         HttpClient client = new DefaultHttpClient();
         HttpPost post = new HttpPost(URL);
         ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
