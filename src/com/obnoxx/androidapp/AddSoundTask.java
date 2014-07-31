@@ -16,14 +16,14 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.File;
 import java.io.IOException;
 
-public class SendHttpRequestTask extends AsyncTask<Void, Void, String> {
+public class AddSoundTask extends AsyncTask<Void, Void, String> {
     private static final String URL = "http://www.obnoxx.co/addSound";
 
     private final Context mContext;
     private final Sound mSound;
     private final String mPhoneNumber;
 
-    public SendHttpRequestTask(Context context, Sound sound, String phoneNumber) {
+    public AddSoundTask(Context context, Sound sound, String phoneNumber) {
         mContext = context;
         mSound = sound;
         mPhoneNumber = phoneNumber;
@@ -39,8 +39,7 @@ public class SendHttpRequestTask extends AsyncTask<Void, Void, String> {
         builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
         builder.addPart("soundFile", new FileBody(new File(mSound.getFilename())));
         builder.addTextBody("phoneNumber", mPhoneNumber);
-        builder.addTextBody("sessionId",
-                "9tvQvzoXH1dPSPBCkaCRHZ0se_Cjo8TYBKOGgdN0wRym0vbD1fwN4lItaAmPFAnG");
+        builder.addTextBody("sessionId", CurrentUser.getSessionId(mContext));
         post.setEntity(builder.build());
 
         HttpResponse response;

@@ -4,13 +4,22 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.view.Window;
+import android.view.WindowManager;
 
 public abstract class SingleFragmentActivity extends FragmentActivity {
     protected abstract Fragment createFragment();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // Hide the window title.
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        // Hide the status bar and other OS-level chrome
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_fragment);
         FragmentManager manager = getSupportFragmentManager();
         Fragment fragment = manager.findFragmentById(R.id.fragmentContainer);

@@ -5,10 +5,9 @@ import android.support.v4.app.Fragment;
 import android.view.Window;
 import android.view.WindowManager;
 
-public class RecordSoundActivity extends SingleFragmentActivity {
+public class InitActivity extends SingleFragmentActivity {
     @Override
     protected Fragment createFragment() {
-       return new RecordSoundFragment();
+        return new InitFragment();
     }
 }
-
