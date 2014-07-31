@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-    <string name="app_name">Record</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">Obnoxx</string>
     <string name="action_settings">Settings</string>
+    <string name="record">Record</string>
+    <string name="play">Play</string>
+    <string name="phone_number_to_log_in">To log in, please give your phone number.</string>
+    <string name="submit">Submit</string>
+    <string name="next_please_enter_verification_code">Next, please enter the verification code.</string>
+    <string name="verification_code">Verification code</string>
+    <string name="back">Back</string>
+    <string name="phone_number">Phone number</string>
 </resources>
