@@ -25,14 +25,14 @@ import java.util.ArrayList;
  * {@code registrationId}.  CookoutServer then records that registration ID
  * and uses it to send this user push notifications (e.g. sounds for them).
  */
-public class AddAndroidRegistrationIdTask extends AsyncTask<Void, Void, Boolean> {
-    private static final String TAG = "AddAndroidRegistrationIdTask";
-    private static final String URL = "http://www.obnoxx.co/addAndroidRegistrationId";
+public class AddDeviceRegistrationIdTask extends AsyncTask<Void, Void, Boolean> {
+    private static final String TAG = "AddDeviceRegistrationIdTask";
+    private static final String URL = "http://www.obnoxx.co/addDeviceRegistrationId";
 
     private final Context mContext;
     private final String mRegistrationId;
 
-    public AddAndroidRegistrationIdTask(Context context, String registrationId) {
+    public AddDeviceRegistrationIdTask(Context context, String registrationId) {
         mContext = context;
         mRegistrationId = registrationId;
     }
@@ -46,6 +46,7 @@ public class AddAndroidRegistrationIdTask extends AsyncTask<Void, Void, Boolean>
         ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
         postParameters.add(new BasicNameValuePair("sessionId", CurrentUser.getSessionId(mContext)));
         postParameters.add(new BasicNameValuePair("registrationId", mRegistrationId));
+        postParameters.add(new BasicNameValuePair("type", "android"));
         try {
             post.setEntity(new UrlEncodedFormEntity(postParameters));
         } catch (UnsupportedEncodingException e) {

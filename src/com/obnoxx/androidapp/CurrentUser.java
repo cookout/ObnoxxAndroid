@@ -75,7 +75,7 @@ public class CurrentUser {
                 protected void onPostExecute(final String registrationId) {
                     // Now we have to save the registration ID to the backend, so
                     // that it can actually send us push notifications.
-                    new AddAndroidRegistrationIdTask(appContext, registrationId) {
+                    new AddDeviceRegistrationIdTask(appContext, registrationId) {
                         @Override
                         protected void onPostExecute(Boolean b) {
                             // Now that we know everything went hunky-dory,
