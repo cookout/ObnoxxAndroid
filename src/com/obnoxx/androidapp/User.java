@@ -47,15 +47,16 @@ public class User {
     }
 
     public User(JSONObject jsonObject) throws JSONException {
-        mId = jsonObject.optString(ID_STR);
-        mEmail = jsonObject.optString(EMAIL_STR);
-        mName = jsonObject.optString(NAME_STR);
-        mPhoneNumber = jsonObject.optString(PHONE_NUMBER_STR);
-        mFacebookUserId = jsonObject.optString(FACEBOOK_USER_ID_STR);
-        mImageUrl = jsonObject.optString(IMAGE_URL_STR);
+        mId = jsonObject.optString(ID_STR, null);
+        mEmail = jsonObject.optString(EMAIL_STR, null);
+        mName = jsonObject.optString(NAME_STR, null);
+        mPhoneNumber = jsonObject.optString(PHONE_NUMBER_STR, null);
+        mFacebookUserId = jsonObject.optString(FACEBOOK_USER_ID_STR, null);
+        mImageUrl = jsonObject.optString(IMAGE_URL_STR, null);
 
         try {
-            mCreateDate = DATE_TIME_FORMATTER.parse(jsonObject.optString(CREATE_DATE_TIME_STR));
+            mCreateDate = DATE_TIME_FORMATTER.parse(
+                    jsonObject.optString(CREATE_DATE_TIME_STR, null));
         } catch (ParseException e) {
             Log.w(TAG, "Could not parse date: " + jsonObject.optString(CREATE_DATE_TIME_STR), e);
         }

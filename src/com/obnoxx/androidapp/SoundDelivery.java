@@ -43,14 +43,15 @@ public class SoundDelivery {
     }
 
     public SoundDelivery(JSONObject jsonObject) throws JSONException {
-        mId = jsonObject.optString(ID_STR);
-        mSoundId = jsonObject.optString(SOUND_ID_STR);
-        mUserId = jsonObject.optString(USER_ID_STR);
-        mPhoneNumber = jsonObject.optString(PHONE_NUMBER_STR);
-        mRecipientUserId = jsonObject.optString(RECIPIENT_USER_ID_STR);
+        mId = jsonObject.optString(ID_STR, null);
+        mSoundId = jsonObject.optString(SOUND_ID_STR, null);
+        mUserId = jsonObject.optString(USER_ID_STR, null);
+        mPhoneNumber = jsonObject.optString(PHONE_NUMBER_STR, null);
+        mRecipientUserId = jsonObject.optString(RECIPIENT_USER_ID_STR, null);
 
         try {
-            mDeliveryDate = DATE_TIME_FORMATTER.parse(jsonObject.optString(DELIVERY_DATE_TIME_STR));
+            mDeliveryDate = DATE_TIME_FORMATTER.parse(
+                    jsonObject.optString(DELIVERY_DATE_TIME_STR, null));
         } catch (ParseException e) {
             Log.w(TAG, "Could not parse date: " +
                     jsonObject.optString(DELIVERY_DATE_TIME_STR), e);

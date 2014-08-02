@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -21,6 +22,7 @@ import org.json.JSONObject;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
 
 /**
  * This service handles incoming Android/GCM push notifications, such as
@@ -59,11 +61,14 @@ public class GcmIntentService extends IntentService {
                 Log.i(TAG, "Received: " + extras.toString());
                 if ("newSound".equals(extras.getString("type"))) {
                     try {
-                        JSONObject newSound = new JSONObject(extras.getString("sound"));
-                        new Sound(downloadSoundFile(newSound.getString("soundFileUrl"))).play();
+                        Bundle soundBundle = extras.getBundle("sound");
+                        String s = extras.getString("sound");
+                        Sound sound = new Sound(s);
+                        cacheSoundFileLocally(sound);
+                        sound.play();
                         addNewSoundNotification(null);
                     } catch (JSONException e) {
-                        Log.w(TAG, "Could not parse new sound JSON", e);
+                        Log.w(TAG, "Could not parse new sound JSON date", e);
                     }
                 }
             }
@@ -74,18 +79,24 @@ public class GcmIntentService extends IntentService {
     }
 
     /**
-     * Downloads the given file to local storage then returns the absolute path to its new
-     * home.
+     * Makes sure that the passed sound has a local representation (e.g. its
+     * stored to disk).  If it does not, download it, update the database,
+     * and update the object.
      * TODO(jonemerson): Find a better place to do this.
      */
-    private String downloadSoundFile(String soundFileUrl) {
+    private void cacheSoundFileLocally(Sound sound) {
+        if (sound.getLocalFilePath() != null) {
+            return;
+        }
+
         HttpClient client = new DefaultHttpClient();
-        HttpGet get = new HttpGet(soundFileUrl);
+        HttpGet get = new HttpGet(sound.getSoundFileUrl());
 
         HttpResponse response;
         try {
             response = client.execute(get);
 
+            // Store the file locally.
             String filename = SoundRecorder.getNewFilename();
             InputStream input = response.getEntity().getContent();
             FileOutputStream outputStream = new FileOutputStream(filename);
@@ -96,11 +107,14 @@ public class GcmIntentService extends IntentService {
                 readBytes = input.read(buffer, 0, buffer.length);
             }
             outputStream.close();
-            return filename;
+
+            // Update the object and the database.
+            sound.setLocalFilePath(filename);
+            SQLiteDatabase db = new DatabaseHandler(this).getWritableDatabase();
+            db.replace(DatabaseHandler.SOUND_TABLE_NAME, null, sound.toValues());
 
         } catch (IOException e) {
             Log.e(TAG, "Could not download file", e);
-            return null;
         }
     }
 

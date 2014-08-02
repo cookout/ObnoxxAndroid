@@ -19,11 +19,11 @@ import java.util.Date;
 public class Sound {
     private static final String TAG = "Sound";
 
-    private static final String ID_STR = "id";
-    private static final String USER_ID_STR = "userId";
-    private static final String FILE_URL_STR = "soundFileUrl";
-    private static final String LOCAL_FILE_PATH_STR = "localFilePath";
-    private static final String CREATE_DATE_TIME_STR = "createDateTime";
+    public static final String ID_STR = "id";
+    public static final String USER_ID_STR = "userId";
+    public static final String FILE_URL_STR = "soundFileUrl";
+    public static final String LOCAL_FILE_PATH_STR = "localFilePath";
+    public static final String CREATE_DATE_TIME_STR = "createDateTime";
     public static final DateFormat DATE_TIME_FORMATTER =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -42,16 +42,20 @@ public class Sound {
     }
 
     public Sound(JSONObject jsonObject) throws JSONException {
-        mId = jsonObject.optString(ID_STR);
-        mUserId = jsonObject.optString(USER_ID_STR);
-        mFileUrl = jsonObject.optString(FILE_URL_STR);
-        mLocalFilePath = jsonObject.optString(LOCAL_FILE_PATH_STR);
+        mId = jsonObject.optString(ID_STR, null);
+        mUserId = jsonObject.optString(USER_ID_STR, null);
+        mFileUrl = jsonObject.optString(FILE_URL_STR, null);
+        mLocalFilePath = jsonObject.optString(LOCAL_FILE_PATH_STR, null);
 
         try {
             mCreateDate = DATE_TIME_FORMATTER.parse(jsonObject.optString(CREATE_DATE_TIME_STR));
         } catch (ParseException e) {
             Log.w(TAG, "Could not parse date: " + jsonObject.optString(CREATE_DATE_TIME_STR), e);
         }
+    }
+
+    public void setLocalFilePath(String localFilePath) {
+        mLocalFilePath = localFilePath;
     }
 
     public static class Builder {
