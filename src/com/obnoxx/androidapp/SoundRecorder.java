@@ -109,7 +109,8 @@ public class SoundRecorder {
                 Toast.makeText(SoundRecorder.this.mAppContext, "Recording ended!",
                         Toast.LENGTH_SHORT).show();
                 mMediaRecorder.reset();
-                SoundRecorder.this.sounds.add(new Sound(mCurrentFilename));
+                SoundRecorder.this.sounds.add(
+                        new Sound.Builder().setLocalFilePath(mCurrentFilename).build());
                 mCurrentFilename = null;
             } else {
                 Toast.makeText(mAppContext, "Info: " + what + ", " + extra, Toast.LENGTH_SHORT)

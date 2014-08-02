@@ -1,5 +1,6 @@
 package com.obnoxx.androidapp;
 
+import android.content.ContentValues;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -25,31 +26,116 @@ public class User {
     private static final String PHONE_NUMBER_STR = "phoneNumber";
     private static final String FACEBOOK_USER_ID_STR = "fbUserId";
     private static final String IMAGE_URL_STR = "imageUrl";
+    private static final String IMAGE_LOCAL_FILE_PATH_STR = "imageLocalFilePath";
     private static final String CREATE_DATE_TIME_STR = "createDateTime";
     public static final DateFormat DATE_TIME_FORMATTER =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    private final String mId;
-    private final String mEmail;
-    private final String mName;
-    private final String mPhoneNumber;
-    private final String mFacebookUserId;
-    private final String mImageUrl;
+    private String mId;
+    private String mEmail;
+    private String mName;
+    private String mPhoneNumber;
+    private String mFacebookUserId;
+    private String mImageUrl;
+    private String mImageLocalFilePath;
     private Date mCreateDate = null;
 
+    private User() {}
+
     public User(String json) throws JSONException {
-        JSONObject jsonObject = new JSONObject(json);
-        mId = jsonObject.optString("id");
-        mEmail = jsonObject.optString("email");
-        mName = jsonObject.optString("name");
-        mPhoneNumber = jsonObject.optString("phoneNumber");
-        mFacebookUserId = jsonObject.optString("facebookUserId");
-        mImageUrl = jsonObject.optString("imageUrl");
+        this(new JSONObject(json));
+    }
+
+    public User(JSONObject jsonObject) throws JSONException {
+        mId = jsonObject.optString(ID_STR);
+        mEmail = jsonObject.optString(EMAIL_STR);
+        mName = jsonObject.optString(NAME_STR);
+        mPhoneNumber = jsonObject.optString(PHONE_NUMBER_STR);
+        mFacebookUserId = jsonObject.optString(FACEBOOK_USER_ID_STR);
+        mImageUrl = jsonObject.optString(IMAGE_URL_STR);
 
         try {
-            mCreateDate = DATE_TIME_FORMATTER.parse(jsonObject.optString("createDateTime"));
+            mCreateDate = DATE_TIME_FORMATTER.parse(jsonObject.optString(CREATE_DATE_TIME_STR));
         } catch (ParseException e) {
-            Log.w(TAG, "Could not parse date: " + jsonObject.optString("createDateTime"), e);
+            Log.w(TAG, "Could not parse date: " + jsonObject.optString(CREATE_DATE_TIME_STR), e);
+        }
+    }
+
+    public static class Builder {
+        private String mId;
+        private String mEmail;
+        private String mName;
+        private String mPhoneNumber;
+        private String mFacebookUserId;
+        private String mImageUrl;
+        private String mImageLocalFilePath;
+        private Date mCreateDate;
+
+        public Builder() {
+        }
+
+        public Builder(User user) {
+            this.mId = user.mId;
+            this.mEmail = user.mEmail;
+            this.mName = user.mName;
+            this.mPhoneNumber = user.mPhoneNumber;
+            this.mFacebookUserId = user.mFacebookUserId;
+            this.mImageUrl = user.mImageUrl;
+            this.mImageLocalFilePath = user.mImageLocalFilePath;
+            this.mCreateDate = user.mCreateDate;
+        }
+
+        public Builder setId(String id) {
+            this.mId = id;
+            return this;
+        }
+
+        public Builder setEmail(String email) {
+            this.mEmail = email;
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.mName = name;
+            return this;
+        }
+
+        public Builder setPhoneNumber(String phoneNumber) {
+            this.mPhoneNumber = phoneNumber;
+            return this;
+        }
+
+        public Builder setFbUserId(String facebookUserId) {
+            this.mFacebookUserId = facebookUserId;
+            return this;
+        }
+
+        public Builder setImageUrl(String imageUrl) {
+            this.mImageUrl = imageUrl;
+            return this;
+        }
+
+        public Builder setImageLocalFilePath(String imageLocalFilePath) {
+            this.mImageLocalFilePath = imageLocalFilePath;
+            return this;
+        }
+
+        public Builder setCreateDate(Date createDate) {
+            this.mCreateDate = createDate;
+            return this;
+        }
+
+        public User build() {
+            User user = new User();
+            user.mId = mId;
+            user.mEmail = mEmail;
+            user.mName = mName;
+            user.mPhoneNumber = mPhoneNumber;
+            user.mFacebookUserId = mFacebookUserId;
+            user.mImageUrl = mImageUrl;
+            user.mImageLocalFilePath = mImageLocalFilePath;
+            user.mCreateDate = mCreateDate;
+            return user;
         }
     }
 
@@ -72,7 +158,36 @@ public class User {
             o.put(FACEBOOK_USER_ID_STR, mFacebookUserId);
         }
 
+        // Deliberately not serializing mImageLocalFilePath, since the server
+        // doesn't need to know about our local caching strategy.
+
         return o;
+    }
+
+    public ContentValues toValues() {
+        ContentValues v = new ContentValues();
+        v.put(DatabaseHandler.USER_ID, mId);
+        v.put(DatabaseHandler.USER_NAME, mName);
+        v.put(DatabaseHandler.USER_PHONE_NUMBER, mPhoneNumber);
+        v.put(DatabaseHandler.USER_CREATE_DATE_TIME, DATE_TIME_FORMATTER.format(mCreateDate));
+
+        if (mEmail != null) {
+            v.put(DatabaseHandler.USER_EMAIL, mEmail);
+        }
+
+        if (mImageUrl != null) {
+            v.put(DatabaseHandler.USER_IMAGE_FILENAME, mImageUrl);
+        }
+
+        if (mFacebookUserId != null) {
+            v.put(DatabaseHandler.USER_FACEBOOK_USER_ID, mFacebookUserId);
+        }
+
+        if (mImageLocalFilePath != null) {
+            v.put(DatabaseHandler.USER_IMAGE_LOCAL_FILE_PATH, mImageLocalFilePath);
+        }
+
+        return v;
     }
 
     public String getId() {
@@ -97,6 +212,10 @@ public class User {
 
     public String getImageUrl() {
         return mImageUrl;
+    }
+
+    public String getImageLocalFilePath() {
+        return mImageLocalFilePath;
     }
 
     public Date getCreateDate() {

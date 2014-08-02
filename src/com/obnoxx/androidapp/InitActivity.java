@@ -12,7 +12,15 @@ public class InitActivity extends SingleFragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Register for push notifications.
         CurrentUser.maybeFetchRegistrationId(this);
+
+        // Preload our database with sounds / deliveries / users relevant to
+        // the current user.d
+        if (CurrentUser.hasSessionId(this)) {
+            new GetSoundsOperation(this);
+        }
     }
 
     @Override

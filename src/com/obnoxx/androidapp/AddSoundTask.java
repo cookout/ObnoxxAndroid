@@ -42,7 +42,7 @@ public class AddSoundTask extends AsyncTask<Void, Void, String> {
         HttpPost post = new HttpPost(URL);
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-        builder.addPart("soundFile", new FileBody(new File(mSound.getFilename())));
+        builder.addPart("soundFile", new FileBody(new File(mSound.getLocalFilePath())));
         builder.addTextBody("phoneNumber", mPhoneNumber);
         builder.addTextBody("sessionId", CurrentUser.getSessionId(mContext));
         post.setEntity(builder.build());
