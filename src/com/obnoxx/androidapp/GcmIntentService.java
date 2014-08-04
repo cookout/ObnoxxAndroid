@@ -61,10 +61,10 @@ public class GcmIntentService extends IntentService {
                 Log.i(TAG, "Received: " + extras.toString());
                 if ("newSound".equals(extras.getString("type"))) {
                     try {
-                        Bundle soundBundle = extras.getBundle("sound");
-                        String s = extras.getString("sound");
-                        Sound sound = new Sound(s);
-                        cacheSoundFileLocally(sound);
+                        Sound sound = new Sound(extras.getString("sound"));
+                        SoundDelivery soundDelivery =
+                                new SoundDelivery(extras.getString("soundDelivery"));
+                        cacheSoundFileLocally(sound, soundDelivery);
                         sound.play();
                         addNewSoundNotification(null);
                     } catch (JSONException e) {
@@ -84,7 +84,7 @@ public class GcmIntentService extends IntentService {
      * and update the object.
      * TODO(jonemerson): Find a better place to do this.
      */
-    private void cacheSoundFileLocally(Sound sound) {
+    private void cacheSoundFileLocally(Sound sound, SoundDelivery soundDelivery) {
         if (sound.getLocalFilePath() != null) {
             return;
         }
@@ -112,6 +112,7 @@ public class GcmIntentService extends IntentService {
             sound.setLocalFilePath(filename);
             SQLiteDatabase db = new DatabaseHandler(this).getWritableDatabase();
             db.replace(DatabaseHandler.SOUND_TABLE_NAME, null, sound.toValues());
+            db.replace(DatabaseHandler.SOUND_DELIVERY_TABLE_NAME, null, soundDelivery.toValues());
 
         } catch (IOException e) {
             Log.e(TAG, "Could not download file", e);
