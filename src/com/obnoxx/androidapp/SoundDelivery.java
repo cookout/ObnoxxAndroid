@@ -1,7 +1,9 @@
 package com.obnoxx.androidapp;
 
 import android.content.ContentValues;
-import android.media.MediaPlayer;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -24,10 +26,9 @@ public class SoundDelivery {
     private static final String PHONE_NUMBER_STR = "phoneNumber";
     private static final String RECIPIENT_USER_ID_STR = "recipientUserId";
     private static final String DELIVERY_DATE_TIME_STR = "deliveryDateTime";
-    private static final DateFormat DATE_TIME_FORMATTER =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    private static MediaPlayer mPlayer = null;
+    public static final DateFormat DATE_TIME_FORMATTER =
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private String mId;
     private String mSoundId;
@@ -164,5 +165,61 @@ public class SoundDelivery {
 
     public Date getDeliveryDate() {
         return mDeliveryDate;
+    }
+
+    public void save(Context context) {
+        SQLiteDatabase db = new DatabaseHandler(context).getWritableDatabase();
+        db.insertWithOnConflict(DatabaseHandler.SOUND_DELIVERY_TABLE_NAME, null, this.toValues(),
+                SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public static SoundDelivery get(Context context, String soundDeliveryId) {
+        SQLiteDatabase db = new DatabaseHandler(context).getReadableDatabase();
+        String[] columns = {
+                DatabaseHandler.SOUND_DELIVERY_ID,
+                DatabaseHandler.SOUND_DELIVERY_SOUND_ID,
+                DatabaseHandler.SOUND_DELIVERY_USER_ID,
+                DatabaseHandler.SOUND_DELIVERY_PHONE_NUMBER,
+                DatabaseHandler.SOUND_DELIVERY_RECIPIENT_USER_ID,
+                DatabaseHandler.SOUND_DELIVERY_DATE_TIME
+        };
+        String[] selectionArgs = new String[] {
+                soundDeliveryId
+        };
+        Cursor cursor = db.query(DatabaseHandler.SOUND_DELIVERY_TABLE_NAME,
+                columns,
+                DatabaseHandler.SOUND_DELIVERY_ID + " = ?",
+                selectionArgs,
+                /* groupBy */ null,
+                /* having */ null,
+                /* orderBy */ null);
+        cursor.moveToFirst();
+        return cursor.isAfterLast() ? null : new SoundDelivery.Builder()
+                .setId(cursor.getString(cursor.getColumnIndex(DatabaseHandler.SOUND_ID)))
+                .setSoundId(cursor.getString(cursor.getColumnIndex(
+                        DatabaseHandler.SOUND_DELIVERY_SOUND_ID)))
+                .setUserId(cursor.getString(cursor.getColumnIndex(
+                        DatabaseHandler.SOUND_USER_ID)))
+                .setPhoneNumber(cursor.getString(cursor.getColumnIndex(
+                        DatabaseHandler.SOUND_DELIVERY_PHONE_NUMBER)))
+                .setRecipientUserId(cursor.getString(
+                        cursor.getColumnIndex(DatabaseHandler.SOUND_DELIVERY_RECIPIENT_USER_ID)))
+                .setDeliveryDate(createDate(cursor.getString(
+                        cursor.getColumnIndex(DatabaseHandler.SOUND_DELIVERY_DATE_TIME))))
+                .build();
+    }
+
+    /**
+     * Parses a date.
+     * TODO(jonemerson): Find a place to put some global Date handling utilities.
+     */
+    private static Date createDate(String dateStr) {
+        Date deliveryDate = null;
+        try {
+            return SoundDelivery.DATE_TIME_FORMATTER.parse(dateStr);
+        } catch (ParseException e) {
+            Log.e(TAG, "Could not parse date: " + dateStr, e);
+            return new Date();
+        }
     }
 }

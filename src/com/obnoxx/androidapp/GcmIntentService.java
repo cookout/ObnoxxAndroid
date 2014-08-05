@@ -5,24 +5,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.ParseException;
 
 /**
  * This service handles incoming Android/GCM push notifications, such as
@@ -61,12 +50,30 @@ public class GcmIntentService extends IntentService {
                 Log.i(TAG, "Received: " + extras.toString());
                 if ("newSound".equals(extras.getString("type"))) {
                     try {
-                        Sound sound = new Sound(extras.getString("sound"));
-                        SoundDelivery soundDelivery =
+                        final Sound sound = new Sound(extras.getString("sound"));
+                        final SoundDelivery soundDelivery =
                                 new SoundDelivery(extras.getString("soundDelivery"));
-                        cacheSoundFileLocally(sound, soundDelivery);
-                        sound.play();
-                        addNewSoundNotification(null);
+
+                        // If we already know about this delivery, do nothing.  We've already played
+                        // the sound and recorded to storage.
+                        synchronized (this) {
+                            if (SoundDelivery.get(this.getApplicationContext(),
+                                    soundDelivery.getId()) != null) {
+                                return;
+                            }
+                            sound.save(this.getApplicationContext());
+                            soundDelivery.save(this.getApplicationContext());
+                        }
+
+                        new DownloadSoundTask(this.getApplicationContext(), sound) {
+                            @Override
+                            public void onPostExecute(Boolean success) {
+                                if (success) {
+                                    sound.play();
+                                    addNewSoundNotification(null);
+                                }
+                            }
+                        }.execute();
                     } catch (JSONException e) {
                         Log.w(TAG, "Could not parse new sound JSON date", e);
                     }
@@ -79,48 +86,8 @@ public class GcmIntentService extends IntentService {
     }
 
     /**
-     * Makes sure that the passed sound has a local representation (e.g. its
-     * stored to disk).  If it does not, download it, update the database,
-     * and update the object.
-     * TODO(jonemerson): Find a better place to do this.
-     */
-    private void cacheSoundFileLocally(Sound sound, SoundDelivery soundDelivery) {
-        if (sound.getLocalFilePath() != null) {
-            return;
-        }
-
-        HttpClient client = new DefaultHttpClient();
-        HttpGet get = new HttpGet(sound.getSoundFileUrl());
-
-        HttpResponse response;
-        try {
-            response = client.execute(get);
-
-            // Store the file locally.
-            String filename = SoundRecorder.getNewFilename();
-            InputStream input = response.getEntity().getContent();
-            FileOutputStream outputStream = new FileOutputStream(filename);
-            byte[] buffer = new byte[10000];
-            int readBytes = input.read(buffer, 0, buffer.length);
-            while (readBytes > 0) {
-                outputStream.write(buffer, 0, readBytes);
-                readBytes = input.read(buffer, 0, buffer.length);
-            }
-            outputStream.close();
-
-            // Update the object and the database.
-            sound.setLocalFilePath(filename);
-            SQLiteDatabase db = new DatabaseHandler(this).getWritableDatabase();
-            db.replace(DatabaseHandler.SOUND_TABLE_NAME, null, sound.toValues());
-            db.replace(DatabaseHandler.SOUND_DELIVERY_TABLE_NAME, null, soundDelivery.toValues());
-
-        } catch (IOException e) {
-            Log.e(TAG, "Could not download file", e);
-        }
-    }
-
-    /**
-     * Puts the message into a notification and post it.
+     * Puts the message into a notification and posts it to the System's
+     * notifications tray.
      */
     private void addNewSoundNotification(Sound sound) {
         String msg = "You received a sound. Click to play.";

@@ -1,5 +1,6 @@
 package com.obnoxx.androidapp;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -21,19 +22,36 @@ public class GetSoundsOperation {
                     SQLiteDatabase db = dbHandler.getWritableDatabase();
 
                     for (Sound sound : response.getSounds()) {
-                        db.replace(DatabaseHandler.SOUND_TABLE_NAME, null, sound.toValues());
+                        sound.save(context);
                     }
                     for (SoundDelivery soundDelivery : response.getSoundDeliveries()) {
-                        db.replace(DatabaseHandler.SOUND_DELIVERY_TABLE_NAME, null,
-                                soundDelivery.toValues());
+                        soundDelivery.save(context);
                     }
                     for (User user : response.getUsers()) {
-                        db.replace(DatabaseHandler.USER_TABLE_NAME, null, user.toValues());
+                        db.insertWithOnConflict(DatabaseHandler.USER_TABLE_NAME, null,
+                                user.toValues(), SQLiteDatabase.CONFLICT_REPLACE);
+                        Log.w(TAG, "insert into " + DatabaseHandler.USER_TABLE_NAME +
+                                " values (" +
+                                GetSoundsOperation.this.toString(user.toValues()) + ")");
                     }
                 } else {
                     Log.e(TAG, "Could not load sounds");
                 }
+
+                onComplete(response);
             }
         }.execute();
+    }
+
+    private String toString(ContentValues v) {
+        StringBuilder b = new StringBuilder();
+        for (String key : v.keySet()) {
+            b.append(key + "=\"" + v.getAsString(key) + "\" ");
+        }
+        return b.toString().trim();
+    }
+
+    public void onComplete(GetSoundsResponse response) {
+        // Override this if you care.
     }
 }

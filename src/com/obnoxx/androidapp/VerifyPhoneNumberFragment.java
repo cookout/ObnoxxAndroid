@@ -1,6 +1,5 @@
 package com.obnoxx.androidapp;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,13 +22,8 @@ public class VerifyPhoneNumberFragment extends Fragment {
     private String mTemporaryUserCode = null;
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_verify_phone_number, parent, false);
+        View v = inflater.inflate(R.layout.verify_phone_number_fragment, parent, false);
         setButtonHandlers(v);
         return v;
     }

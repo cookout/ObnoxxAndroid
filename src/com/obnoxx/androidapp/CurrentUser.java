@@ -16,6 +16,11 @@ import org.json.JSONException;
 public class CurrentUser {
     private static final String TAG = "CurrentUser";
 
+    /**
+     * Returns true if we believe the user's logged in.  (The possession of a session ID
+     * implies this ... Though we might some day want logic to verify session IDs and
+     * refresh them as necessary).
+     */
     public static boolean hasSessionId(Context appContext) {
         return getSessionId(appContext) != null;
     }

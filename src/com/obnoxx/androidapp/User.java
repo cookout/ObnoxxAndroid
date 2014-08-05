@@ -1,6 +1,9 @@
 package com.obnoxx.androidapp;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -221,5 +224,65 @@ public class User {
 
     public Date getCreateDate() {
         return mCreateDate;
+    }
+
+    public void save(Context context) {
+        SQLiteDatabase db = new DatabaseHandler(context).getWritableDatabase();
+        db.insertWithOnConflict(DatabaseHandler.USER_TABLE_NAME, null, this.toValues(),
+                SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public static User get(Context context, String soundId) {
+        SQLiteDatabase db = new DatabaseHandler(context).getReadableDatabase();
+        String[] columns = {
+                DatabaseHandler.USER_ID,
+                DatabaseHandler.USER_NAME,
+                DatabaseHandler.USER_EMAIL,
+                DatabaseHandler.USER_PHONE_NUMBER,
+                DatabaseHandler.USER_FACEBOOK_USER_ID,
+                DatabaseHandler.USER_IMAGE_FILENAME,
+                DatabaseHandler.USER_IMAGE_LOCAL_FILE_PATH,
+                DatabaseHandler.USER_CREATE_DATE_TIME,
+        };
+        String[] selectionArgs = new String[] {
+                soundId
+        };
+        Cursor cursor = db.query(DatabaseHandler.USER_TABLE_NAME,
+                columns,
+                DatabaseHandler.USER_ID + " = ?",
+                selectionArgs,
+                /* groupBy */ null,
+                /* having */ null,
+                /* orderBy */ null);
+        cursor.moveToFirst();
+        return cursor.isAfterLast() ? null : new User.Builder()
+                .setId(cursor.getString(cursor.getColumnIndex(DatabaseHandler.SOUND_ID)))
+                .setName(cursor.getString(cursor.getColumnIndex(DatabaseHandler.USER_NAME)))
+                .setEmail(cursor.getString(cursor.getColumnIndex(DatabaseHandler.USER_EMAIL)))
+                .setPhoneNumber(cursor.getString(cursor.getColumnIndex(
+                        DatabaseHandler.USER_PHONE_NUMBER)))
+                .setFbUserId(cursor.getString(cursor.getColumnIndex(
+                        DatabaseHandler.USER_FACEBOOK_USER_ID)))
+                .setImageUrl(cursor.getString(cursor.getColumnIndex(
+                        DatabaseHandler.USER_IMAGE_FILENAME)))
+                .setImageLocalFilePath(cursor.getString(cursor.getColumnIndex(
+                        DatabaseHandler.USER_IMAGE_LOCAL_FILE_PATH)))
+                .setCreateDate(createDate(cursor.getString(
+                        cursor.getColumnIndex(DatabaseHandler.SOUND_CREATE_DATE_TIME))))
+                .build();
+    }
+
+    /**
+     * Parses a date.
+     * TODO(jonemerson): Find a place to put some global Date handling utilities.
+     */
+    private static Date createDate(String dateStr) {
+        Date deliveryDate = null;
+        try {
+            return SoundDelivery.DATE_TIME_FORMATTER.parse(dateStr);
+        } catch (ParseException e) {
+            Log.e(TAG, "Could not parse date: " + dateStr, e);
+            return new Date();
+        }
     }
 }

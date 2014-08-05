@@ -23,7 +23,7 @@ public class InitFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_init, parent, false);
+        View v = inflater.inflate(R.layout.init_fragment, parent, false);
         return v;
     }
 

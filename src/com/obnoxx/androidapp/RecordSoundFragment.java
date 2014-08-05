@@ -1,6 +1,7 @@
 package com.obnoxx.androidapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -28,7 +29,7 @@ public class RecordSoundFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_record_sound, parent, false);
+        View v = inflater.inflate(R.layout.record_sound_fragment, parent, false);
 
         setButtonHandlers(v);
 
@@ -39,6 +40,7 @@ public class RecordSoundFragment extends Fragment {
         ((Button) v.findViewById(R.id.btnRecord)).setOnClickListener(onClickListener);
         ((Button) v.findViewById(R.id.btnPlay)).setOnClickListener(onClickListener);
         ((Button) v.findViewById(R.id.btnSend)).setOnClickListener(onClickListener);
+        ((Button) v.findViewById(R.id.button_profile)).setOnClickListener(onClickListener);
     }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -59,6 +61,11 @@ public class RecordSoundFragment extends Fragment {
 
                 case R.id.btnSend:
                     send();
+                    break;
+
+                case R.id.button_profile:
+                    startActivity(new Intent(RecordSoundFragment.this.getActivity(),
+                            ProfileActivity.class));
                     break;
             }
         }

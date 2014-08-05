@@ -13,9 +13,11 @@ import android.util.Log;
 public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHandler";
     private static final String DATABASE_NAME = "obnoxx_database";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
 
     // Database definitions.
+    public static final String CURSOR_ID = "_id";
+
     public static final String USER_TABLE_NAME = "User";
     public static final String USER_ID = "id";
     public static final String USER_EMAIL = "email";

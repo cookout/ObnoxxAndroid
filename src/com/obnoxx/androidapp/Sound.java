@@ -1,12 +1,16 @@
 package com.obnoxx.androidapp;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -158,10 +162,9 @@ public class Sound {
         return mCreateDate;
     }
 
-    // TODO(jonemerson): This method no longer belongs here.  There should just be
-    // a sound playback manager somewhere that takes Files to play.  This class
-    // should solely be responsible for representing data in memory that comes to
-    // or goes to the server or the Sqlite database.
+    // TODO(jonemerson): Does this method belong here?  What is our object representation
+    // of Sounds / Deliveries / Users?  Do we have a separation of our data representations
+    // and business logic?  Probably we do want such a separation... make it happen.
     public void play() {
         if (mPlayer == null) {
             mPlayer = new MediaPlayer();
@@ -170,11 +173,69 @@ public class Sound {
         }
 
         try {
-            mPlayer.setDataSource(mLocalFilePath);
+            try {
+                mPlayer.setDataSource(mLocalFilePath);
+            } catch (IOException e) {
+                Log.e(TAG, "Could not play sound, it is corrupted.  File size = " +
+                        new File(mLocalFilePath).length());
+                return;
+            }
             mPlayer.prepare();
             mPlayer.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void save(Context context) {
+        SQLiteDatabase db = new DatabaseHandler(context).getWritableDatabase();
+        db.insertWithOnConflict(DatabaseHandler.SOUND_TABLE_NAME, null, this.toValues(),
+                SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public static Sound get(Context context, String soundId) {
+        SQLiteDatabase db = new DatabaseHandler(context).getReadableDatabase();
+        String[] columns = {
+                DatabaseHandler.SOUND_ID,
+                DatabaseHandler.SOUND_USER_ID,
+                DatabaseHandler.SOUND_FILE_URL,
+                DatabaseHandler.SOUND_LOCAL_FILE_PATH,
+                DatabaseHandler.SOUND_CREATE_DATE_TIME,
+        };
+        String[] selectionArgs = new String[] {
+                soundId
+        };
+        Cursor cursor = db.query(DatabaseHandler.SOUND_TABLE_NAME,
+                columns,
+                DatabaseHandler.SOUND_ID + " = ?",
+                selectionArgs,
+                /* groupBy */ null,
+                /* having */ null,
+                /* orderBy */ null);
+        cursor.moveToFirst();
+        return cursor.isAfterLast() ? null : new Sound.Builder()
+                .setId(cursor.getString(cursor.getColumnIndex(DatabaseHandler.SOUND_ID)))
+                .setUserId(cursor.getString(cursor.getColumnIndex(DatabaseHandler.SOUND_USER_ID)))
+                .setSoundFileUrl(cursor.getString(cursor.getColumnIndex(
+                        DatabaseHandler.SOUND_FILE_URL)))
+                .setLocalFilePath(cursor.getString(cursor.getColumnIndex(
+                        DatabaseHandler.SOUND_LOCAL_FILE_PATH)))
+                .setCreateDate(createDate(cursor.getString(cursor.getColumnIndex(
+                        DatabaseHandler.SOUND_CREATE_DATE_TIME))))
+                .build();
+    }
+
+    /**
+     * Parses a date.
+     * TODO(jonemerson): Find a place to put some global Date handling utilities.
+     */
+    private static Date createDate(String dateStr) {
+        Date deliveryDate = null;
+        try {
+            return SoundDelivery.DATE_TIME_FORMATTER.parse(dateStr);
+        } catch (ParseException e) {
+            Log.e(TAG, "Could not parse date: " + dateStr, e);
+            return new Date();
         }
     }
 }
