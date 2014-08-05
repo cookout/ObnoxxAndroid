@@ -50,8 +50,8 @@ public class SoundRecorder {
 
         mCurrentFilename = getNewFilename();
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mMediaRecorder.setOutputFile(mCurrentFilename);
         mMediaRecorder.setMaxDuration(3 * 1000);
         mMediaRecorder.setOnInfoListener(mInfoListener);
