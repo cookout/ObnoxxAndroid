@@ -22,7 +22,7 @@ public class SoundRecorder {
     private static final String TAG = "SoundRecorder";
 
     private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
-    private static final String AUDIO_RECORDER_FILE_EXT_3GP = ".3gp";
+    private static final String AUDIO_RECORDER_FILE_EXT_3GP = ".m4a";
 
     private final Context mAppContext;
     private MediaRecorder mMediaRecorder = null;
