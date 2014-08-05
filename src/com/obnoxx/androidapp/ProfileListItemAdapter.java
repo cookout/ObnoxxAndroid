@@ -3,13 +3,17 @@ package com.obnoxx.androidapp;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.text.ParseException;
+import com.obnoxx.androidapp.data.DatabaseHandler;
+import com.obnoxx.androidapp.data.Sound;
+import com.obnoxx.androidapp.data.SoundData;
+import com.obnoxx.androidapp.data.SoundDelivery;
+import com.obnoxx.androidapp.data.SoundDeliveryData;
+
 import java.util.Date;
 
 public class ProfileListItemAdapter extends CursorAdapter {
@@ -29,32 +33,32 @@ public class ProfileListItemAdapter extends CursorAdapter {
      * needs to render sound deliveries in profile_list_item rows.
      */
     public static final String[] PROJECTION = {
-            DatabaseHandler.SOUND_DELIVERY_TABLE_NAME + "._rowid_ as " +
+            SoundDeliveryData.SQL_TABLE_NAME + "._rowid_ as " +
                     DatabaseHandler.CURSOR_ID,
-            DatabaseHandler.SOUND_TABLE_NAME + "." + DatabaseHandler.SOUND_ID + " as " +
+            SoundData.SQL_TABLE_NAME + "." + SoundData.SQL_ID + " as " +
                     SOUND_ID_COLUMN_NAME,
-            DatabaseHandler.SOUND_DELIVERY_TABLE_NAME + "." +
-                    DatabaseHandler.SOUND_DELIVERY_ID + " as " + SOUND_DELIVERY_ID_COLUMN_NAME,
-            DatabaseHandler.SOUND_DELIVERY_TABLE_NAME + "." +
-                    DatabaseHandler.SOUND_DELIVERY_DATE_TIME + " as " +
+            SoundDeliveryData.SQL_TABLE_NAME + "." +
+                    SoundDeliveryData.SQL_ID + " as " + SOUND_DELIVERY_ID_COLUMN_NAME,
+            SoundDeliveryData.SQL_TABLE_NAME + "." +
+                    SoundDeliveryData.SQL_DATE_TIME + " as " +
                     SOUND_DELIVERY_DATE_TIME_COLUMN_NAME,
-            DatabaseHandler.SOUND_DELIVERY_TABLE_NAME + "." +
-                    DatabaseHandler.SOUND_DELIVERY_USER_ID + " as " +
+            SoundDeliveryData.SQL_TABLE_NAME + "." +
+                    SoundDeliveryData.SQL_USER_ID + " as " +
                     RECIPIENT_USER_ID_COLUMN_NAME,
-            DatabaseHandler.SOUND_DELIVERY_TABLE_NAME + "." +
-                    DatabaseHandler.SOUND_DELIVERY_PHONE_NUMBER + " as " +
+            SoundDeliveryData.SQL_TABLE_NAME + "." +
+                    SoundDeliveryData.SQL_PHONE_NUMBER + " as " +
                     PHONE_NUMBER_COLUMN_NAME,
-            DatabaseHandler.SOUND_DELIVERY_TABLE_NAME + "." +
-                    DatabaseHandler.SOUND_DELIVERY_USER_ID + " as " +
+            SoundDeliveryData.SQL_TABLE_NAME + "." +
+                    SoundDeliveryData.SQL_USER_ID + " as " +
                     USER_ID_COLUMN_NAME,
-            DatabaseHandler.SOUND_TABLE_NAME + "." +
-                    DatabaseHandler.SOUND_FILE_URL + " as " +
+            SoundData.SQL_TABLE_NAME + "." +
+                    SoundData.SQL_FILE_URL + " as " +
                     SOUND_FILE_URL_COLUMN_NAME,
-            DatabaseHandler.SOUND_TABLE_NAME + "." +
-                    DatabaseHandler.SOUND_LOCAL_FILE_PATH + " as " +
+            SoundData.SQL_TABLE_NAME + "." +
+                    SoundData.SQL_LOCAL_FILE_PATH + " as " +
                     LOCAL_FILE_PATH_COLUMN_NAME,
-            DatabaseHandler.SOUND_TABLE_NAME + "." +
-                    DatabaseHandler.SOUND_CREATE_DATE_TIME + " as " +
+            SoundData.SQL_TABLE_NAME + "." +
+                    SoundData.SQL_CREATE_DATE_TIME + " as " +
                     SOUND_CREATE_DATE_COLUMN_NAME
     };
 
@@ -81,15 +85,15 @@ public class ProfileListItemAdapter extends CursorAdapter {
         Cursor cursor = this.getCursor();
         cursor.moveToPosition(position);
 
-        return new SoundDelivery.Builder()
+        return new SoundDelivery(new SoundDeliveryData.Builder()
                 .setId(cursor.getString(cursor.getColumnIndex(SOUND_DELIVERY_ID_COLUMN_NAME)))
                 .setSoundId(cursor.getString(cursor.getColumnIndex(SOUND_ID_COLUMN_NAME)))
                 .setRecipientUserId(cursor.getString(cursor.getColumnIndex(RECIPIENT_USER_ID_COLUMN_NAME)))
                 .setPhoneNumber(cursor.getString(cursor.getColumnIndex(PHONE_NUMBER_COLUMN_NAME)))
-                .setDeliveryDate(createDate(cursor.getString(
+                .setDeliveryDate(DateHelper.parse(cursor.getString(
                         cursor.getColumnIndex(SOUND_DELIVERY_DATE_TIME_COLUMN_NAME))))
                 .setUserId(cursor.getString(cursor.getColumnIndex(USER_ID_COLUMN_NAME)))
-                .build();
+                .build());
     }
 
     public Sound getSoundForPosition(int position) {
@@ -106,29 +110,15 @@ public class ProfileListItemAdapter extends CursorAdapter {
         s = cursor.getString(i);
         i = cursor.getColumnIndex(SOUND_CREATE_DATE_COLUMN_NAME);
         s = cursor.getString(i);
-        Date d = createDate(s);
+        Date d = DateHelper.parse(s);
 
-        return new Sound.Builder()
+        return new Sound(new SoundData.Builder()
                 .setId(cursor.getString(cursor.getColumnIndex(SOUND_ID_COLUMN_NAME)))
                 .setUserId(cursor.getString(cursor.getColumnIndex(USER_ID_COLUMN_NAME)))
                 .setSoundFileUrl(cursor.getString(cursor.getColumnIndex(SOUND_FILE_URL_COLUMN_NAME)))
                 .setLocalFilePath(cursor.getString(cursor.getColumnIndex(LOCAL_FILE_PATH_COLUMN_NAME)))
-                .setCreateDate(createDate(cursor.getString(
+                .setCreateDate(DateHelper.parse(cursor.getString(
                         cursor.getColumnIndex(SOUND_CREATE_DATE_COLUMN_NAME))))
-                .build();
-    }
-
-    /**
-     * Parses a date.
-     * TODO(jonemerson): Find a place to put some global Date handling utilities.
-     */
-    private Date createDate(String dateStr) {
-        Date deliveryDate = null;
-        try {
-            return SoundDelivery.DATE_TIME_FORMATTER.parse(dateStr);
-        } catch (ParseException e) {
-            Log.e(TAG, "Could not parse date: " + dateStr, e);
-            return new Date();
-        }
+                .build());
     }
 }

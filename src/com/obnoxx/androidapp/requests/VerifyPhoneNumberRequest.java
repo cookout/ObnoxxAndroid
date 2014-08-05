@@ -1,4 +1,4 @@
-package com.obnoxx.androidapp;
+package com.obnoxx.androidapp.requests;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
-public class VerifyPhoneNumberTask extends AsyncTask<Void, Void, VerifyPhoneNumberResponse> {
+public class VerifyPhoneNumberRequest extends AsyncTask<Void, Void, VerifyPhoneNumberResponse> {
     private static final String URL = "http://www.obnoxx.co/verifyPhoneNumber";
 
     private final Context mContext;
@@ -26,13 +26,13 @@ public class VerifyPhoneNumberTask extends AsyncTask<Void, Void, VerifyPhoneNumb
     private String mVerificationCode = null;
     private String mTemporaryUserCode = null;
 
-    public VerifyPhoneNumberTask(Context context, String phoneNumber) {
+    public VerifyPhoneNumberRequest(Context context, String phoneNumber) {
         mContext = context;
         mPhoneNumber = phoneNumber;
     }
 
-    public VerifyPhoneNumberTask(Context context, String verificationCode,
-            String temporaryUserCode) {
+    public VerifyPhoneNumberRequest(Context context, String verificationCode,
+                                    String temporaryUserCode) {
         mContext = context;
         mVerificationCode = verificationCode;
         mTemporaryUserCode = temporaryUserCode;

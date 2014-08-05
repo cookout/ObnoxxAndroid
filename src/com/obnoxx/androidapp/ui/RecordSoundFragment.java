@@ -1,4 +1,4 @@
-package com.obnoxx.androidapp;
+package com.obnoxx.androidapp.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,6 +11,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.Toast;
+
+import com.obnoxx.androidapp.R;
+import com.obnoxx.androidapp.SoundRecorder;
+import com.obnoxx.androidapp.SoundRecordingException;
+import com.obnoxx.androidapp.data.Sound;
+import com.obnoxx.androidapp.requests.AddSoundRequest;
 
 /**
  * Implements the sound recording interface.  Lets the user record a sound,
@@ -79,14 +85,10 @@ public class RecordSoundFragment extends Fragment {
         }
     }
 
-    private void enableButton(int id, boolean isEnable) {
-        ((Button) getActivity().findViewById(id)).setEnabled(isEnable);
-    }
-
     private void send() {
         Sound sound = mSoundRecorder.getLastSound();
         if (sound != null) {
-            AddSoundTask t = new AddSoundTask(
+            AddSoundRequest t = new AddSoundRequest(
                     this.getActivity(), sound, getSelectedPhoneNumber());
             t.execute();
         }

@@ -28,7 +28,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".InitActivity"
+            android:name=".ui.InitActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,15 +37,15 @@
         </activity>
 
         <activity
-            android:name=".RecordSoundActivity"
+            android:name=".ui.RecordSoundActivity"
             android:label="@string/app_name"/>
 
         <activity
-            android:name=".VerifyPhoneNumberActivity"
+            android:name=".ui.VerifyPhoneNumberActivity"
             android:label="@string/app_name"/>
 
         <activity
-            android:name=".ProfileActivity"
+            android:name=".ui.ProfileActivity"
             android:label="@string/app_name"/>
 
         <receiver android:name=".SmsReceiver" android:exported="true" >

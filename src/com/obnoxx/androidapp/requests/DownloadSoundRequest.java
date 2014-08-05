@@ -1,8 +1,11 @@
-package com.obnoxx.androidapp;
+package com.obnoxx.androidapp.requests;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.obnoxx.androidapp.SoundRecorder;
+import com.obnoxx.androidapp.data.Sound;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -21,25 +24,25 @@ import java.io.InputStream;
  * Returns true if the file was successfully downloaded and stored to local
  * disk.
  */
-public class DownloadSoundTask extends AsyncTask<Void, Void, Boolean> {
+public class DownloadSoundRequest extends AsyncTask<Void, Void, Boolean> {
     private static final String TAG = "DownloadSoundTask";
 
     private final Context mContext;
     private final Sound mSound;
 
-    public DownloadSoundTask(Context context, Sound sound) {
+    public DownloadSoundRequest(Context context, Sound sound) {
         mContext = context;
         mSound = sound;
     }
 
     @Override
     protected Boolean doInBackground(Void... voids) {
-        if (mSound.getLocalFilePath() != null) {
+        if (mSound.getData().getLocalFilePath() != null) {
             return true;
         }
 
         HttpClient client = new DefaultHttpClient();
-        HttpGet get = new HttpGet(mSound.getSoundFileUrl());
+        HttpGet get = new HttpGet(mSound.getData().getSoundFileUrl());
 
         HttpResponse response;
         try {
@@ -58,8 +61,7 @@ public class DownloadSoundTask extends AsyncTask<Void, Void, Boolean> {
             outputStream.close();
 
             // Update the object and the database.
-            mSound.setLocalFilePath(filename);
-            mSound.save(mContext);
+            mSound.setLocalFilePath(mContext, filename);
             return true;
 
         } catch (IOException e) {

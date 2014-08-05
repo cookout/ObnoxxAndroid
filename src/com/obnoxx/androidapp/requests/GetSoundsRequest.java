@@ -1,7 +1,9 @@
-package com.obnoxx.androidapp;
+package com.obnoxx.androidapp.requests;
 
 import android.content.Context;
 import android.os.AsyncTask;
+
+import com.obnoxx.androidapp.CurrentUser;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -15,12 +17,12 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-public class GetSoundsTask extends AsyncTask<Void, Void, GetSoundsResponse> {
+public class GetSoundsRequest extends AsyncTask<Void, Void, GetSoundsResponse> {
     private static final String BASE_URL = "http://www.obnoxx.co/getSounds";
 
     private final Context mContext;
 
-    public GetSoundsTask(Context context) {
+    public GetSoundsRequest(Context context) {
         mContext = context;
     }
 

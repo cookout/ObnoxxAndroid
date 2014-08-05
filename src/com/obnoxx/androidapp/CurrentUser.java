@@ -7,6 +7,10 @@ import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.obnoxx.androidapp.data.UserData;
+import com.obnoxx.androidapp.requests.AddDeviceRegistrationIdRequest;
+import com.obnoxx.androidapp.requests.GetRegistrationIdRequest;
+
 import org.json.JSONException;
 
 /**
@@ -31,12 +35,12 @@ public class CurrentUser {
         return sharedPrefs.getString("sessionId", null);
     }
 
-    public static User getUser(Context appContext) {
+    public static UserData getUser(Context appContext) {
         SharedPreferences sharedPrefs =
                 PreferenceManager.getDefaultSharedPreferences(appContext);
         String userJson = sharedPrefs.getString("user", null);
         try {
-            return userJson == null ? null : new User(userJson);
+            return userJson == null ? null : new UserData(userJson);
         } catch (JSONException e) {
             Log.w(TAG, "Could not parse saved User", e);
             return null;
@@ -50,11 +54,11 @@ public class CurrentUser {
         editor.commit();
     }
 
-    public static void setUser(Context appContext, User user) {
+    public static void setUser(Context appContext, UserData userData) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
         SharedPreferences.Editor editor = prefs.edit();
         try {
-            editor.putString("user", user.toJSONObject().toString());
+            editor.putString("user", userData.toJSONObject().toString());
             editor.commit();
         } catch (JSONException e) {
             Log.w(TAG, "Could not save user", e);
@@ -75,12 +79,12 @@ public class CurrentUser {
         // If we don't have a registration ID, let's go get one for this device.
         if (getUser(appContext) != null &&
                 getRegistrationId(appContext) == null) {
-            new GetRegistrationIdTask(appContext) {
+            new GetRegistrationIdRequest(appContext) {
                 @Override
                 protected void onPostExecute(final String registrationId) {
                     // Now we have to save the registration ID to the backend, so
                     // that it can actually send us push notifications.
-                    new AddDeviceRegistrationIdTask(appContext, registrationId) {
+                    new AddDeviceRegistrationIdRequest(appContext, registrationId) {
                         @Override
                         protected void onPostExecute(Boolean b) {
                             // Now that we know everything went hunky-dory,

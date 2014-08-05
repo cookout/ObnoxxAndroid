@@ -5,6 +5,9 @@ import android.media.MediaRecorder;
 import android.os.Environment;
 import android.widget.Toast;
 
+import com.obnoxx.androidapp.data.Sound;
+import com.obnoxx.androidapp.data.SoundData;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -109,8 +112,8 @@ public class SoundRecorder {
                 Toast.makeText(SoundRecorder.this.mAppContext, "Recording ended!",
                         Toast.LENGTH_SHORT).show();
                 mMediaRecorder.reset();
-                SoundRecorder.this.sounds.add(
-                        new Sound.Builder().setLocalFilePath(mCurrentFilename).build());
+                SoundRecorder.this.sounds.add(new Sound(
+                        new SoundData.Builder().setLocalFilePath(mCurrentFilename).build()));
                 mCurrentFilename = null;
             } else {
                 Toast.makeText(mAppContext, "Info: " + what + ", " + extra, Toast.LENGTH_SHORT)

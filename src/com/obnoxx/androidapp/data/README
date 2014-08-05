@@ -1,0 +1,12 @@
+A note about com.obnoxx.androidapp.data ...
+
+The design of this package is a bit of a work in progress.  My general thinking
+is that *Data classes are ONLY for data representation, and serialization/
+deserialization from/to JSON and Android ContentValues/Bundles.  The non-*Data
+classes, e.g. Sound and User, are for business logic - such as actually pulling
+data from the database, orchestrating calls to the server with writes to the
+database, etc.  This might not be the best separation in the world, and maybe we
+want two packages to make the separation more obvious, but I think it's a step
+in the right direction for now.
+
+jon

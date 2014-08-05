@@ -10,6 +10,12 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.obnoxx.androidapp.data.Sound;
+import com.obnoxx.androidapp.data.SoundData;
+import com.obnoxx.androidapp.data.SoundDelivery;
+import com.obnoxx.androidapp.data.SoundDeliveryData;
+import com.obnoxx.androidapp.requests.DownloadSoundRequest;
+import com.obnoxx.androidapp.ui.InitActivity;
 
 import org.json.JSONException;
 
@@ -50,22 +56,22 @@ public class GcmIntentService extends IntentService {
                 Log.i(TAG, "Received: " + extras.toString());
                 if ("newSound".equals(extras.getString("type"))) {
                     try {
-                        final Sound sound = new Sound(extras.getString("sound"));
-                        final SoundDelivery soundDelivery =
-                                new SoundDelivery(extras.getString("soundDelivery"));
+                        final Sound sound = new Sound(new SoundData(extras.getString("sound")));
+                        final SoundDelivery soundDelivery = new SoundDelivery(
+                                new SoundDeliveryData(extras.getString("soundDelivery")));
 
                         // If we already know about this delivery, do nothing.  We've already played
                         // the sound and recorded to storage.
                         synchronized (this) {
                             if (SoundDelivery.get(this.getApplicationContext(),
-                                    soundDelivery.getId()) != null) {
+                                    soundDelivery.getData().getId()) != null) {
                                 return;
                             }
                             sound.save(this.getApplicationContext());
                             soundDelivery.save(this.getApplicationContext());
                         }
 
-                        new DownloadSoundTask(this.getApplicationContext(), sound) {
+                        new DownloadSoundRequest(this.getApplicationContext(), sound) {
                             @Override
                             public void onPostExecute(Boolean success) {
                                 if (success) {
@@ -89,7 +95,7 @@ public class GcmIntentService extends IntentService {
      * Puts the message into a notification and posts it to the System's
      * notifications tray.
      */
-    private void addNewSoundNotification(Sound sound) {
+    private void addNewSoundNotification(SoundData soundData) {
         String msg = "You received a sound. Click to play.";
 
         // TODO(jonemerson): The content intent should go to the PlaybackActivity, with an Extra

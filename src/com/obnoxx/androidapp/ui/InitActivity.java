@@ -1,7 +1,10 @@
-package com.obnoxx.androidapp;
+package com.obnoxx.androidapp.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+
+import com.obnoxx.androidapp.CurrentUser;
+import com.obnoxx.androidapp.GetSoundsOperation;
 
 /**
  * The initial activity for Obnoxx.  Basically just acts as air-traffic control

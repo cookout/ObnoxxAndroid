@@ -1,4 +1,4 @@
-package com.obnoxx.androidapp;
+package com.obnoxx.androidapp.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,6 +12,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+
+import com.obnoxx.androidapp.CurrentUser;
+import com.obnoxx.androidapp.GetSoundsOperation;
+import com.obnoxx.androidapp.ProfileListItemAdapter;
+import com.obnoxx.androidapp.R;
+import com.obnoxx.androidapp.SoundDeliveryProvider;
+import com.obnoxx.androidapp.data.Sound;
+import com.obnoxx.androidapp.requests.DownloadSoundRequest;
+import com.obnoxx.androidapp.requests.GetSoundsResponse;
 
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
@@ -47,7 +56,7 @@ public class ProfileFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
                 final Sound sound = adapter.getSoundForPosition(position);
-                new DownloadSoundTask(ProfileFragment.this.getActivity(), sound) {
+                new DownloadSoundRequest(ProfileFragment.this.getActivity(), sound) {
                     @Override
                     public void onPostExecute(Boolean success) {
                         if (success) {
@@ -63,9 +72,13 @@ public class ProfileFragment extends Fragment {
         new GetSoundsOperation(this.getActivity()) {
             @Override
             public void onComplete(GetSoundsResponse response) {
-                Log.i(TAG, "Get sounds complete - " + response.getSoundDeliveries().size() +
-                        " deliveries, " + response.getSounds().size() + " sounds");
-                adapter.notifyDataSetChanged();
+                if (response.getStatusCode() == 200) {
+                    Log.i(TAG, "Get sounds complete - " + response.getSoundDeliveries().size() +
+                            " deliveries, " + response.getSounds().size() + " sounds");
+                    adapter.notifyDataSetChanged();
+                } else {
+                    Log.e(TAG, "Could not load sounds");
+                }
             }
         };
 

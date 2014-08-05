@@ -1,8 +1,11 @@
-package com.obnoxx.androidapp;
+package com.obnoxx.androidapp.requests;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
+
+import com.obnoxx.androidapp.CurrentUser;
+import com.obnoxx.androidapp.data.Sound;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -21,14 +24,17 @@ import java.io.IOException;
  * which will then inform {@code phoneNumber} that there is a sound for them
  * to hear.
  */
-public class AddSoundTask extends AsyncTask<Void, Void, String> {
+public class AddSoundRequest extends AsyncTask<Void, Void, String> {
     private static final String URL = "http://www.obnoxx.co/addSound";
 
     private final Context mContext;
     private final Sound mSound;
     private final String mPhoneNumber;
 
-    public AddSoundTask(Context context, Sound sound, String phoneNumber) {
+    // TODO(jonemerson): The API for this class should NOT take a Sound.  A Sound should only be
+    // created on the server-side.  This constructor should just take the sound file and recipient,
+    // then update the database with the Sound it gets back from the server.
+    public AddSoundRequest(Context context, Sound sound, String phoneNumber) {
         mContext = context;
         mSound = sound;
         mPhoneNumber = phoneNumber;
@@ -42,7 +48,7 @@ public class AddSoundTask extends AsyncTask<Void, Void, String> {
         HttpPost post = new HttpPost(URL);
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-        builder.addPart("soundFile", new FileBody(new File(mSound.getLocalFilePath())));
+        builder.addPart("soundFile", new FileBody(new File(mSound.getData().getLocalFilePath())));
         builder.addTextBody("phoneNumber", mPhoneNumber);
         builder.addTextBody("sessionId", CurrentUser.getSessionId(mContext));
         post.setEntity(builder.build());

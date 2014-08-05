@@ -1,4 +1,6 @@
-package com.obnoxx.androidapp;
+package com.obnoxx.androidapp.requests;
+
+import com.obnoxx.androidapp.data.UserData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -7,7 +9,7 @@ public class VerifyPhoneNumberResponse {
     private int mStatusCode = 0;
     private String mTemporaryUserCode = null;
     private String mSessionId = null;
-    private User mUser = null;
+    private UserData mUserData = null;
 
     public VerifyPhoneNumberResponse(String json) {
         mStatusCode = 200;
@@ -16,7 +18,7 @@ public class VerifyPhoneNumberResponse {
             JSONObject jsonObject = new JSONObject(json);
             mTemporaryUserCode = jsonObject.optString("temporaryUserCode");
             mSessionId = jsonObject.optString("sessionId");
-            mUser = jsonObject.has("user") ? new User(jsonObject.optString("user")) : null;
+            mUserData = jsonObject.has("user") ? new UserData(jsonObject.optString("user")) : null;
         } catch (JSONException e) {
             mStatusCode = 600;
             return;
@@ -39,7 +41,7 @@ public class VerifyPhoneNumberResponse {
         return mSessionId;
     }
 
-    public User getUser() {
-        return mUser;
+    public UserData getUser() {
+        return mUserData;
     }
 }

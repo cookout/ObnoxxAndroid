@@ -5,6 +5,13 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.obnoxx.androidapp.data.DatabaseHandler;
+import com.obnoxx.androidapp.data.Sound;
+import com.obnoxx.androidapp.data.SoundDelivery;
+import com.obnoxx.androidapp.data.User;
+import com.obnoxx.androidapp.requests.GetSoundsRequest;
+import com.obnoxx.androidapp.requests.GetSoundsResponse;
+
 /**
  * Does air-traffic control for getting all the sounds the user has sent or
  * received, plus their delivery details, plus any users involved, and then
@@ -14,7 +21,7 @@ public class GetSoundsOperation {
     private static final String TAG = "GetSoundsOperation";
 
     public GetSoundsOperation(final Context context) {
-        new GetSoundsTask(context) {
+        new GetSoundsRequest(context) {
             @Override
             public void onPostExecute(GetSoundsResponse response) {
                 if (response.getStatusCode() == 200) {
@@ -28,11 +35,7 @@ public class GetSoundsOperation {
                         soundDelivery.save(context);
                     }
                     for (User user : response.getUsers()) {
-                        db.insertWithOnConflict(DatabaseHandler.USER_TABLE_NAME, null,
-                                user.toValues(), SQLiteDatabase.CONFLICT_REPLACE);
-                        Log.w(TAG, "insert into " + DatabaseHandler.USER_TABLE_NAME +
-                                " values (" +
-                                GetSoundsOperation.this.toString(user.toValues()) + ")");
+                        user.save(context);
                     }
                 } else {
                     Log.e(TAG, "Could not load sounds");

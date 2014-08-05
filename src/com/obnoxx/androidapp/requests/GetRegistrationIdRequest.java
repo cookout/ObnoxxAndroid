@@ -1,4 +1,4 @@
-package com.obnoxx.androidapp;
+package com.obnoxx.androidapp.requests;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -16,7 +16,7 @@ import java.io.IOException;
  * To use this class, extend it to override {@code onPostExecute}.  The String
  * passed to it is the GCM registration ID for this device.
  */
-public class GetRegistrationIdTask extends AsyncTask<Void, Void, String> {
+public class GetRegistrationIdRequest extends AsyncTask<Void, Void, String> {
     private static final String TAG = "GetRegistrationIdTask";
     private static GoogleCloudMessaging sGcm;
 
@@ -28,7 +28,7 @@ public class GetRegistrationIdTask extends AsyncTask<Void, Void, String> {
 
     private Context mContext;
 
-    public GetRegistrationIdTask(Context context) {
+    public GetRegistrationIdRequest(Context context) {
         mContext = context;
     }
 

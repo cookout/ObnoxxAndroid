@@ -9,7 +9,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
+
+import com.obnoxx.androidapp.data.DatabaseHandler;
+import com.obnoxx.androidapp.data.SoundData;
+import com.obnoxx.androidapp.data.SoundDeliveryData;
 
 /**
  * A content provider for sound deliveries and their underlying sounds.
@@ -54,27 +57,27 @@ public class SoundDeliveryProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(DatabaseHandler.SOUND_DELIVERY_TABLE_NAME + ", " +
-                DatabaseHandler.SOUND_TABLE_NAME);
+        queryBuilder.setTables(SoundDeliveryData.SQL_TABLE_NAME + ", " +
+                SoundData.SQL_TABLE_NAME);
 
         String input = uri.getLastPathSegment();
         switch (sURIMatcher.match(uri)) {
             case DELIVERIES_FOR_USER_ID:
-                String soundIdColumn = DatabaseHandler.SOUND_TABLE_NAME +
-                        "." + DatabaseHandler.SOUND_ID;
-                String soundDeliverySoundIdColumn = DatabaseHandler.SOUND_DELIVERY_TABLE_NAME +
-                        "." + DatabaseHandler.SOUND_DELIVERY_SOUND_ID;
-                String userIdColumn = DatabaseHandler.SOUND_DELIVERY_TABLE_NAME + "." +
-                        DatabaseHandler.SOUND_DELIVERY_USER_ID;
-                String recipientUserIdColumn = DatabaseHandler.SOUND_DELIVERY_TABLE_NAME + "." +
-                        DatabaseHandler.SOUND_DELIVERY_RECIPIENT_USER_ID;
+                String soundIdColumn = SoundData.SQL_TABLE_NAME +
+                        "." + SoundData.SQL_ID;
+                String soundDeliverySoundIdColumn = SoundDeliveryData.SQL_TABLE_NAME +
+                        "." + SoundDeliveryData.SQL_SOUND_ID;
+                String userIdColumn = SoundDeliveryData.SQL_TABLE_NAME + "." +
+                        SoundDeliveryData.SQL_USER_ID;
+                String recipientUserIdColumn = SoundDeliveryData.SQL_TABLE_NAME + "." +
+                        SoundDeliveryData.SQL_RECIPIENT_USER_ID;
                 queryBuilder.appendWhere(
                         soundIdColumn + "=" + soundDeliverySoundIdColumn + " AND " +
                         "(" + userIdColumn + "=\"" + input + "\" OR " +
                                 recipientUserIdColumn + "=\"" + input + "\")");
                 break;
             case DELIVERY_BY_ID:
-                queryBuilder.appendWhere(DatabaseHandler.SOUND_DELIVERY_ID + "=" + input);
+                queryBuilder.appendWhere(SoundDeliveryData.SQL_ID + "=" + input);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
@@ -112,11 +115,11 @@ public class SoundDeliveryProvider extends ContentProvider {
             case DELIVERY_BY_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
-                    rowsAffected = db.delete(DatabaseHandler.SOUND_DELIVERY_TABLE_NAME,
-                            DatabaseHandler.SOUND_DELIVERY_ID + "=" + id, null);
+                    rowsAffected = db.delete(SoundDeliveryData.SQL_TABLE_NAME,
+                            SoundDeliveryData.SQL_ID + "=" + id, null);
                 } else {
-                    rowsAffected = db.delete(DatabaseHandler.SOUND_DELIVERY_TABLE_NAME,
-                            selection + " and " + DatabaseHandler.SOUND_DELIVERY_ID + "=" + id,
+                    rowsAffected = db.delete(SoundDeliveryData.SQL_TABLE_NAME,
+                            selection + " and " + SoundDeliveryData.SQL_ID + "=" + id,
                             selectionArgs);
                 }
                 break;

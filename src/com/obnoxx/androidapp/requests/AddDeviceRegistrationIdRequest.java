@@ -1,8 +1,10 @@
-package com.obnoxx.androidapp;
+package com.obnoxx.androidapp.requests;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.obnoxx.androidapp.CurrentUser;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -24,14 +26,14 @@ import java.util.ArrayList;
  * {@code registrationId}.  CookoutServer then records that registration ID
  * and uses it to send this user push notifications (e.g. sounds for them).
  */
-public class AddDeviceRegistrationIdTask extends AsyncTask<Void, Void, Boolean> {
+public class AddDeviceRegistrationIdRequest extends AsyncTask<Void, Void, Boolean> {
     private static final String TAG = "AddDeviceRegistrationIdTask";
     private static final String URL = "http://www.obnoxx.co/addDeviceRegistrationId";
 
     private final Context mContext;
     private final String mRegistrationId;
 
-    public AddDeviceRegistrationIdTask(Context context, String registrationId) {
+    public AddDeviceRegistrationIdRequest(Context context, String registrationId) {
         mContext = context;
         mRegistrationId = registrationId;
     }

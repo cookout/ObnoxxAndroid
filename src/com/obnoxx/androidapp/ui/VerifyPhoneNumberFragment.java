@@ -1,4 +1,4 @@
-package com.obnoxx.androidapp;
+package com.obnoxx.androidapp.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.obnoxx.androidapp.CurrentUser;
+import com.obnoxx.androidapp.R;
+import com.obnoxx.androidapp.requests.VerifyPhoneNumberRequest;
+import com.obnoxx.androidapp.requests.VerifyPhoneNumberResponse;
 
 public class VerifyPhoneNumberFragment extends Fragment {
     private static final String TAG = "VerifyPhoneNumberFragment";
@@ -45,8 +50,8 @@ public class VerifyPhoneNumberFragment extends Fragment {
                         setMode(MODE_PROGRESS_BAR);
                         String phoneNumber = VerifyPhoneNumberFragment.this.getPhoneNumberText()
                                 .getText().toString();
-                        VerifyPhoneNumberTask t =
-                                new VerifyPhoneNumberTask(appContext, phoneNumber) {
+                        VerifyPhoneNumberRequest t =
+                                new VerifyPhoneNumberRequest(appContext, phoneNumber) {
                                     @Override
                                     public void onPostExecute(VerifyPhoneNumberResponse result) {
                                         if (result.getStatusCode() == 200) {
@@ -71,8 +76,8 @@ public class VerifyPhoneNumberFragment extends Fragment {
                         String verificationCodeText =
                                 VerifyPhoneNumberFragment.this.getVerificationCodeText()
                                         .getText().toString();
-                        VerifyPhoneNumberTask t =
-                                new VerifyPhoneNumberTask(appContext, verificationCodeText,
+                        VerifyPhoneNumberRequest t =
+                                new VerifyPhoneNumberRequest(appContext, verificationCodeText,
                                         mTemporaryUserCode) {
                                     @Override
                                     public void onPostExecute(VerifyPhoneNumberResponse response) {
