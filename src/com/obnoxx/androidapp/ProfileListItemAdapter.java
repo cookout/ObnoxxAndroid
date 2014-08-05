@@ -16,7 +16,7 @@ public class ProfileListItemAdapter extends CursorAdapter {
     private static final String TAG = "ProfileListItemAdapter";
     private static final String SOUND_ID_COLUMN_NAME = "sound_id";
     private static final String SOUND_DELIVERY_ID_COLUMN_NAME = "sound_delivery_id";
-    private static final String SOUND_DELIVERY_DATE_TIME_COLUMN_NAME = "sound_delivery_date_time";
+    public static final String SOUND_DELIVERY_DATE_TIME_COLUMN_NAME = "sound_delivery_date_time";
     private static final String RECIPIENT_USER_ID_COLUMN_NAME = "sound_delivery_recipient_user_id";
     private static final String PHONE_NUMBER_COLUMN_NAME = "sound_delivery_phone_number";
     private static final String USER_ID_COLUMN_NAME = "sound_delivery_user_id";
