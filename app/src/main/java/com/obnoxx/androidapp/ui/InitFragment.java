@@ -39,7 +39,7 @@ public class InitFragment extends Fragment {
         if (CurrentUser.hasSessionId(getActivity())) {
             startActivity(new Intent(getActivity(), RecordSoundActivity.class));
         } else {
-            startActivity(new Intent(getActivity(), VerifyPhoneNumberActivity.class));
+            startActivity(new Intent(getActivity(), LoginActivity.class));
         }
     }
 }
