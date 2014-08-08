@@ -12,13 +12,13 @@ import android.widget.EditText;
 import com.obnoxx.androidapp.R;
 
 /**
- * UI that prompts the user for the verification code we just texted him.
+ * UI that allows a new user to select his user name.
  */
-public class LoginVerificationCodeFragment extends Fragment {
-    private OnVerificationCodeSelectedListener mCallback;
+public class LoginNewUserFragment extends Fragment {
+    private OnUserNameSelectedListener mCallback;
 
-    public interface OnVerificationCodeSelectedListener {
-        public void onVerificationCodeSelected(String verificationCode);
+    public interface OnUserNameSelectedListener {
+        public void onUserNameSelected(String verificationCode);
     }
 
     @Override
@@ -28,39 +28,33 @@ public class LoginVerificationCodeFragment extends Fragment {
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
-            mCallback = (OnVerificationCodeSelectedListener) activity;
+            mCallback = (OnUserNameSelectedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.getClass().getCanonicalName()
-                    + " must implement OnVerificationCodeSelectedListener");
+                    + " must implement OnUserNameSelectedListener");
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.login_verification_code_fragment, parent, false);
+        View v = inflater.inflate(R.layout.login_new_user_fragment, parent, false);
         setButtonHandlers(v);
         return v;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getVerificationCodeText().getText().clear();
-    }
-
     private void setButtonHandlers(View v) {
-        v.findViewById(R.id.verification_code_button).setOnClickListener(
+        v.findViewById(R.id.create_user_button).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        mCallback.onVerificationCodeSelected(
-                                getVerificationCodeText().getText().toString());
+                        mCallback.onUserNameSelected(
+                                getUserNameText().getText().toString());
                     }
                 }
         );
     }
 
-    private EditText getVerificationCodeText() {
-        return ((EditText) getActivity().findViewById(R.id.verification_code));
+    private EditText getUserNameText() {
+        return ((EditText) getActivity().findViewById(R.id.user_name));
     }
 }

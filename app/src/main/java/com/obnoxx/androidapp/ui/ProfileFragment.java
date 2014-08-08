@@ -34,7 +34,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
         getLoaderManager().initLoader(0, null, this);
 
         Uri uri = Uri.parse(SoundDeliveryProvider.DELIVERIES_FOR_URI.toString() + "/" +
-                CurrentUser.getUser(this.getActivity()).getId());
+                CurrentUser.getUser(this.getActivity()).getData().getId());
         Cursor deliveries = getActivity().managedQuery(
                 uri, ProfileListItemAdapter.PROJECTION, null, null,
                 ProfileListItemAdapter.SOUND_DELIVERY_DATE_TIME_COLUMN_NAME + " DESC");

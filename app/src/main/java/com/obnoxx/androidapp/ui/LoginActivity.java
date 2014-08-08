@@ -12,16 +12,22 @@ import android.widget.Toast;
 
 import com.obnoxx.androidapp.CurrentUser;
 import com.obnoxx.androidapp.R;
+import com.obnoxx.androidapp.data.User;
+import com.obnoxx.androidapp.requests.CreateUserRequest;
+import com.obnoxx.androidapp.requests.CreateUserResponse;
 import com.obnoxx.androidapp.requests.VerifyPhoneNumberRequest;
 import com.obnoxx.androidapp.requests.VerifyPhoneNumberResponse;
 
 public class LoginActivity extends FragmentActivity
         implements LoginPhoneNumberFragment.OnPhoneNumberSelectedListener,
-        LoginVerificationCodeFragment.OnVerificationCodeSelectedListener {
+        LoginVerificationCodeFragment.OnVerificationCodeSelectedListener,
+        LoginNewUserFragment.OnUserNameSelectedListener {
     private String mTemporaryUserCode = null;
+    private String mVerificationCode = null;
     private LoginPhoneNumberFragment mLoginPhoneNumberFragment = new LoginPhoneNumberFragment();
     private LoginVerificationCodeFragment mLoginVerificationCodeFragment =
             new LoginVerificationCodeFragment();
+    private LoginNewUserFragment mLoginNewUserFragment = new LoginNewUserFragment();
     private View mProgressBarView = null;
 
     @Override
@@ -43,6 +49,7 @@ public class LoginActivity extends FragmentActivity
 
     @Override
     public void onResume() {
+        super.onResume();
         hideProgressBar();
     }
 
@@ -82,13 +89,51 @@ public class LoginActivity extends FragmentActivity
     }
 
     @Override
-    public void onVerificationCodeSelected(String verificationCode) {
+    public void onVerificationCodeSelected(final String verificationCode) {
         showProgressBar();
 
         VerifyPhoneNumberRequest t = new VerifyPhoneNumberRequest(
                 this, verificationCode, mTemporaryUserCode) {
             @Override
             public void onPostExecute(VerifyPhoneNumberResponse response) {
+                hideProgressBar();
+
+                if (response.getStatusCode() == 200) {
+                    // If we get a user back, the user's logged in.  If we don't, but the response
+                    // was 200 OK, that means we should invite the user to create a new account.
+                    User user = response.getUser();
+                    if (user != null) {
+                        CurrentUser.setUser(LoginActivity.this, response.getUser());
+
+                        // Set the session ID last, since its presence indicates that the user has
+                        // successfully logged in and other fields (e.g. user) have been populated.
+                        CurrentUser.setSessionId(LoginActivity.this, response.getSessionId());
+
+                        startActivity(new Intent(LoginActivity.this, RecordSoundActivity.class));
+                    } else {
+                        mVerificationCode = verificationCode;
+                        showFragment(mLoginNewUserFragment);
+                    }
+
+                } else {
+                    Toast.makeText(LoginActivity.this, "Error, try again",
+                            Toast.LENGTH_SHORT).show();
+                    LoginActivity.this.showFragment(
+                            LoginActivity.this.mLoginPhoneNumberFragment);
+                }
+            }
+        };
+        t.execute();
+    }
+
+    @Override
+    public void onUserNameSelected(String userName) {
+        showProgressBar();
+
+        CreateUserRequest t = new CreateUserRequest(
+                this, userName, mVerificationCode, mTemporaryUserCode) {
+            @Override
+            public void onPostExecute(CreateUserResponse response) {
                 hideProgressBar();
 
                 if (response.getStatusCode() == 200) {
@@ -99,12 +144,9 @@ public class LoginActivity extends FragmentActivity
                     CurrentUser.setSessionId(LoginActivity.this, response.getSessionId());
 
                     startActivity(new Intent(LoginActivity.this, RecordSoundActivity.class));
-
                 } else {
                     Toast.makeText(LoginActivity.this, "Error, try again",
                             Toast.LENGTH_SHORT).show();
-                    LoginActivity.this.showFragment(
-                            LoginActivity.this.mLoginPhoneNumberFragment);
                 }
             }
         };

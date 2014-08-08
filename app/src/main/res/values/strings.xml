@@ -11,4 +11,9 @@
     <string name="verification_code">Verification code</string>
     <string name="back">Back</string>
     <string name="phone_number">Phone number</string>
+    <string name="new_user_welcome">Welcome new user!  Please give yourself a name!</string>
+    <string name="new_user_welcome_subtext">Note: User names must start with a letter and cannot
+        contain any spaces.</string>
+    <string name="user_name">User name</string>
+    <string name="create_user">Create user</string>
 </resources>

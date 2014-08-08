@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.obnoxx.androidapp.data.User;
 import com.obnoxx.androidapp.data.UserData;
 import com.obnoxx.androidapp.requests.AddDeviceRegistrationIdRequest;
 import com.obnoxx.androidapp.requests.GetRegistrationIdRequest;
@@ -35,12 +36,12 @@ public class CurrentUser {
         return sharedPrefs.getString("sessionId", null);
     }
 
-    public static UserData getUser(Context appContext) {
+    public static User getUser(Context appContext) {
         SharedPreferences sharedPrefs =
                 PreferenceManager.getDefaultSharedPreferences(appContext);
         String userJson = sharedPrefs.getString("user", null);
         try {
-            return userJson == null ? null : new UserData(userJson);
+            return userJson == null ? null : new User(new UserData(userJson));
         } catch (JSONException e) {
             Log.w(TAG, "Could not parse saved User", e);
             return null;
@@ -54,11 +55,11 @@ public class CurrentUser {
         editor.commit();
     }
 
-    public static void setUser(Context appContext, UserData userData) {
+    public static void setUser(Context appContext, User user) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
         SharedPreferences.Editor editor = prefs.edit();
         try {
-            editor.putString("user", userData.toJSONObject().toString());
+            editor.putString("user", user.getData().toJSONObject().toString());
             editor.commit();
         } catch (JSONException e) {
             Log.w(TAG, "Could not save user", e);
