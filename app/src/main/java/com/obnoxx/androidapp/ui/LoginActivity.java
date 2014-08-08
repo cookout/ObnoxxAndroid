@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.obnoxx.androidapp.CurrentUser;
+import com.obnoxx.androidapp.GetSoundsOperation;
 import com.obnoxx.androidapp.R;
 import com.obnoxx.androidapp.data.User;
 import com.obnoxx.androidapp.requests.CreateUserRequest;
@@ -103,13 +104,7 @@ public class LoginActivity extends FragmentActivity
                     // was 200 OK, that means we should invite the user to create a new account.
                     User user = response.getUser();
                     if (user != null) {
-                        CurrentUser.setUser(LoginActivity.this, response.getUser());
-
-                        // Set the session ID last, since its presence indicates that the user has
-                        // successfully logged in and other fields (e.g. user) have been populated.
-                        CurrentUser.setSessionId(LoginActivity.this, response.getSessionId());
-
-                        startActivity(new Intent(LoginActivity.this, RecordSoundActivity.class));
+                        completeLogin(user, response.getSessionId());
                     } else {
                         mVerificationCode = verificationCode;
                         showFragment(mLoginNewUserFragment);
@@ -137,16 +132,10 @@ public class LoginActivity extends FragmentActivity
                 hideProgressBar();
 
                 if (response.getStatusCode() == 200) {
-                    CurrentUser.setUser(LoginActivity.this, response.getUser());
-
-                    // Set the session ID last, since its presence indicates that the user has
-                    // successfully logged in and other fields (e.g. user) have been populated.
-                    CurrentUser.setSessionId(LoginActivity.this, response.getSessionId());
-
-                    startActivity(new Intent(LoginActivity.this, RecordSoundActivity.class));
+                    completeLogin(response.getUser(), response.getSessionId());
                 } else {
-                    Toast.makeText(LoginActivity.this, "Error, try again",
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Error, try again", Toast.LENGTH_SHORT)
+                            .show();
                 }
             }
         };
@@ -178,5 +167,26 @@ public class LoginActivity extends FragmentActivity
         if (mProgressBarView != null) {
             mProgressBarView.setVisibility(View.GONE);
         }
+    }
+
+    /**
+     * Persists the newly logged in user, starts fetching his data, and sends the
+     * user to the main application activity.
+     * @param user The new user's account.
+     * @param sessionId The user's session ID.
+     */
+    private void completeLogin(User user, String sessionId) {
+        // Set the user.
+        CurrentUser.setUser(LoginActivity.this, user);
+
+        // Set the session ID last, since its presence indicates that the user has
+        // successfully logged in and other fields (e.g. user) have been populated.
+        CurrentUser.setSessionId(LoginActivity.this, sessionId);
+
+        // Start fetching the user's previous sounds/deliveries.
+        // This will put them into the SoundDeliveryProvider.
+        new GetSoundsOperation(getApplicationContext()).execute();
+
+        startActivity(new Intent(LoginActivity.this, RecordSoundActivity.class));
     }
 }

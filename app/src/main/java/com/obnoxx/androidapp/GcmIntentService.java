@@ -62,13 +62,17 @@ public class GcmIntentService extends IntentService {
 
                         // If we already know about this delivery, do nothing.  We've already played
                         // the sound and recorded to storage.
+                        Context context = this.getApplicationContext();
                         synchronized (this) {
-                            if (SoundDelivery.get(this.getApplicationContext(),
-                                    soundDelivery.getData().getId()) != null) {
+                            if (SoundDelivery.get(context, soundDelivery.getData().getId()) !=
+                                    null) {
                                 return;
                             }
                             sound.save(this.getApplicationContext());
                             soundDelivery.save(this.getApplicationContext());
+                            context.getContentResolver().notifyChange(
+                                    SoundDeliveryProvider.getUriForCurrentUserSoundDelivieries(
+                                            context), null);
                         }
 
                         new DownloadSoundRequest(this.getApplicationContext(), sound) {

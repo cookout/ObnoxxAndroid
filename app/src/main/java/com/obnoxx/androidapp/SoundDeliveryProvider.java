@@ -3,6 +3,7 @@ package com.obnoxx.androidapp;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,7 +12,9 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import com.obnoxx.androidapp.data.DatabaseHandler;
+import com.obnoxx.androidapp.data.Sound;
 import com.obnoxx.androidapp.data.SoundData;
+import com.obnoxx.androidapp.data.SoundDelivery;
 import com.obnoxx.androidapp.data.SoundDeliveryData;
 
 /**
@@ -49,7 +52,11 @@ public class SoundDeliveryProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        mDb = new DatabaseHandler(getContext());
+        Context context = getContext();
+        mDb = new DatabaseHandler(context);
+        if (CurrentUser.hasSessionId(context)) {
+            new GetSoundsOperation(context).execute();
+        }
         return true;
     }
 
@@ -107,6 +114,9 @@ public class SoundDeliveryProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
+        // NOTE(jonemerson): This is just copy-paste code right now.  In
+        // actuality, if ever used, we should write back to the server the
+        // delete instead of only deleting from local.
         SQLiteDatabase db = mDb.getWritableDatabase();
         int rowsAffected = 0;
         switch (sURIMatcher.match(uri)) {
@@ -133,5 +143,14 @@ public class SoundDeliveryProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
         throw new IllegalArgumentException("Unsupported operation");
+    }
+
+    public void insertSoundDelivery(Sound sound, SoundDelivery delivery) {
+
+    }
+
+    public static Uri getUriForCurrentUserSoundDelivieries(Context context) {
+        return Uri.parse(SoundDeliveryProvider.DELIVERIES_FOR_URI.toString() + "/" +
+                CurrentUser.getUser(context).getData().getId());
     }
 }

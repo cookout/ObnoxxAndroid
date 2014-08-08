@@ -19,42 +19,36 @@ import com.obnoxx.androidapp.requests.GetSoundsResponse;
  */
 public class GetSoundsOperation {
     private static final String TAG = "GetSoundsOperation";
+    private final Context mContext;
 
     public GetSoundsOperation(final Context context) {
-        new GetSoundsRequest(context) {
+        mContext = context.getApplicationContext();
+    }
+
+    public void execute() {
+        new GetSoundsRequest(mContext) {
             @Override
             public void onPostExecute(GetSoundsResponse response) {
                 if (response.getStatusCode() == 200) {
-                    DatabaseHandler dbHandler = new DatabaseHandler(context);
+                    DatabaseHandler dbHandler = new DatabaseHandler(mContext);
                     SQLiteDatabase db = dbHandler.getWritableDatabase();
 
                     for (Sound sound : response.getSounds()) {
-                        sound.save(context);
+                        sound.save(mContext);
                     }
                     for (SoundDelivery soundDelivery : response.getSoundDeliveries()) {
-                        soundDelivery.save(context);
+                        soundDelivery.save(mContext);
                     }
                     for (User user : response.getUsers()) {
-                        user.save(context);
+                        user.save(mContext);
                     }
                 } else {
                     Log.e(TAG, "Could not load sounds");
                 }
 
-                onComplete(response);
+                mContext.getContentResolver().notifyChange(
+                        SoundDeliveryProvider.getUriForCurrentUserSoundDelivieries(mContext), null);
             }
         }.execute();
-    }
-
-    private String toString(ContentValues v) {
-        StringBuilder b = new StringBuilder();
-        for (String key : v.keySet()) {
-            b.append(key + "=\"" + v.getAsString(key) + "\" ");
-        }
-        return b.toString().trim();
-    }
-
-    public void onComplete(GetSoundsResponse response) {
-        // Override this if you care.
     }
 }

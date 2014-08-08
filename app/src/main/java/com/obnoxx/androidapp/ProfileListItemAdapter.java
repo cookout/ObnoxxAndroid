@@ -62,8 +62,8 @@ public class ProfileListItemAdapter extends CursorAdapter {
                     SOUND_CREATE_DATE_COLUMN_NAME
     };
 
-    public ProfileListItemAdapter(Context context, Cursor c) {
-        super(context, c, 0);
+    public ProfileListItemAdapter(Context context) {
+        super(context, /* cursor */ null, 0);
     }
 
     @Override
@@ -99,18 +99,6 @@ public class ProfileListItemAdapter extends CursorAdapter {
     public Sound getSoundForPosition(int position) {
         Cursor cursor = this.getCursor();
         cursor.moveToPosition(position);
-
-        int i = cursor.getColumnIndex(SOUND_ID_COLUMN_NAME);
-        String s = cursor.getString(i);
-        i = cursor.getColumnIndex(USER_ID_COLUMN_NAME);
-        s = cursor.getString(i);
-        i = cursor.getColumnIndex(SOUND_FILE_URL_COLUMN_NAME);
-        s = cursor.getString(i);
-        i = cursor.getColumnIndex(LOCAL_FILE_PATH_COLUMN_NAME);
-        s = cursor.getString(i);
-        i = cursor.getColumnIndex(SOUND_CREATE_DATE_COLUMN_NAME);
-        s = cursor.getString(i);
-        Date d = DateHelper.parse(s);
 
         return new Sound(new SoundData.Builder()
                 .setId(cursor.getString(cursor.getColumnIndex(SOUND_ID_COLUMN_NAME)))
