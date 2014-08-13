@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.puredata.core.PdBase;
 
 /**
  * Wraps an Android MediaRecorder to provide a nice API for recording 3-second audio clips and

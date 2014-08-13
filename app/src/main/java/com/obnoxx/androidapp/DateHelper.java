@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Methods for serializing and deserializing dates.
@@ -13,7 +14,7 @@ import java.util.Date;
 public class DateHelper {
     private static final String TAG = "DateHelper";
     private static final DateFormat DATE_TIME_FORMATTER =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
     public static Date parse(String dateStr) {
         try {
