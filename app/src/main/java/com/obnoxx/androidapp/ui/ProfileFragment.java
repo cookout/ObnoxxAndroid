@@ -7,7 +7,6 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +14,10 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.obnoxx.androidapp.GetSoundsOperation;
-import com.obnoxx.androidapp.ProfileListItemAdapter;
 import com.obnoxx.androidapp.R;
 import com.obnoxx.androidapp.SoundDeliveryProvider;
 import com.obnoxx.androidapp.data.Sound;
 import com.obnoxx.androidapp.requests.DownloadSoundRequest;
-import com.obnoxx.androidapp.requests.GetSoundsResponse;
 
 public class ProfileFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = "ProfileFragment";

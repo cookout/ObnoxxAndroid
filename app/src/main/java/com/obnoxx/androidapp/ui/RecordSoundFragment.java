@@ -24,6 +24,7 @@ import com.obnoxx.androidapp.requests.AddSoundRequest;
  */
 public class RecordSoundFragment extends Fragment {
     private static final String TAG = "RecordSoundFragment";
+    public static final int RESULT_CONTACTS_PICKED = 1;
 
     private SoundRecorder mSoundRecorder;
 
@@ -47,6 +48,7 @@ public class RecordSoundFragment extends Fragment {
         ((Button) v.findViewById(R.id.btnPlay)).setOnClickListener(onClickListener);
         ((Button) v.findViewById(R.id.btnSend)).setOnClickListener(onClickListener);
         ((Button) v.findViewById(R.id.button_profile)).setOnClickListener(onClickListener);
+        ((Button) v.findViewById(R.id.button_choose_people)).setOnClickListener(onClickListener);
     }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -72,6 +74,13 @@ public class RecordSoundFragment extends Fragment {
                 case R.id.button_profile:
                     startActivity(new Intent(RecordSoundFragment.this.getActivity(),
                             ProfileActivity.class));
+                    break;
+
+                case R.id.button_choose_people:
+                    startActivityForResult(
+                            new Intent(RecordSoundFragment.this.getActivity(),
+                                    ContactPickerActivity.class),
+                            RESULT_CONTACTS_PICKED);
                     break;
             }
         }
@@ -103,5 +112,13 @@ public class RecordSoundFragment extends Fragment {
             return "+14153163345";
         }
         throw new IllegalStateException("Should not happen");
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RecordSoundFragment.RESULT_CONTACTS_PICKED &&
+                resultCode == Activity.RESULT_OK) {
+            Bundle results = data.getBundleExtra(ContactPickerFragment.RESULT_RESULTS);
+
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.obnoxx.androidapp;
+package com.obnoxx.androidapp.ui;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,13 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.obnoxx.androidapp.DateHelper;
+import com.obnoxx.androidapp.R;
 import com.obnoxx.androidapp.data.DatabaseHandler;
 import com.obnoxx.androidapp.data.Sound;
 import com.obnoxx.androidapp.data.SoundData;
 import com.obnoxx.androidapp.data.SoundDelivery;
 import com.obnoxx.androidapp.data.SoundDeliveryData;
-
-import java.util.Date;
 
 public class ProfileListItemAdapter extends CursorAdapter {
     private static final String TAG = "ProfileListItemAdapter";
