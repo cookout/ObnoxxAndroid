@@ -16,25 +16,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.obnoxx.androidapp.R;
+import com.obnoxx.androidapp.data.ContactGroup;
 
 public class ContactPickerFragment extends ListFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = "ContactPickerFragment";
-    private static final String SAVED_INSTANCE_STATE_MODEL = "model";
-    public static final String RESULT_RESULTS = "results";
+    private static final String SAVED_INSTANCE_STATE_CONTACT_GROUP = "sisContactGroup";
+    public static final String RESULT_CONTACT_GROUP = "rContactGroup";
 
-    private Bundle mInitialInstanceState;
-    private ContactPickerModel mModel = null;
+    private ContactGroup mInitialContactGroup;
+    private ContactGroup mContactGroup = null;
     private ContactPickerListAdapter mAdapter = null;
 
-    /**
-     * Sets the default selection for the contact picker, probably from Android
-     * system settings.  If this Fragment is then created without a saved
-     * instance state, this view will default to the contacts specified in this
-     * initial state.
-     */
-    public void setArguments(Bundle initialInstanceState) {
-        mInitialInstanceState = initialInstanceState;
+    public void setInitialContactGroup(ContactGroup initialContactGroup) {
+        mInitialContactGroup = initialContactGroup;
     }
 
     @Override
@@ -42,10 +37,10 @@ public class ContactPickerFragment extends ListFragment
         View v = inflater.inflate(R.layout.profile_fragment, parent, false);
 
         getLoaderManager().initLoader(0, null, this);
-        mModel = new ContactPickerModel(savedInstanceState == null ?
-                mInitialInstanceState :
-                savedInstanceState.getBundle(SAVED_INSTANCE_STATE_MODEL));
-        mAdapter = new ContactPickerListAdapter(this.getActivity(), mModel);
+        mContactGroup = savedInstanceState == null ?
+                mInitialContactGroup.clone() :
+                (ContactGroup) savedInstanceState.getParcelable(SAVED_INSTANCE_STATE_CONTACT_GROUP);
+        mAdapter = new ContactPickerListAdapter(this.getActivity(), mContactGroup);
         this.setListAdapter(mAdapter);
 
         ((Button) v.findViewById(R.id.back_button)).setOnClickListener(
@@ -53,7 +48,7 @@ public class ContactPickerFragment extends ListFragment
                     @Override
                     public void onClick(View view) {
                         Intent returnIntent = new Intent();
-                        returnIntent.putExtra(RESULT_RESULTS, mModel.getSavedInstanceState());
+                        returnIntent.putExtra(RESULT_CONTACT_GROUP, mContactGroup);
                         ContactPickerFragment.this.getActivity().setResult(
                                 Activity.RESULT_OK, returnIntent);
                         ContactPickerFragment.this.getActivity().finish();
@@ -92,6 +87,6 @@ public class ContactPickerFragment extends ListFragment
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putBundle(SAVED_INSTANCE_STATE_MODEL, mModel.getSavedInstanceState());
+        outState.putParcelable(SAVED_INSTANCE_STATE_CONTACT_GROUP, mContactGroup);
     }
 }

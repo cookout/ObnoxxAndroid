@@ -9,12 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.obnoxx.androidapp.R;
 import com.obnoxx.androidapp.SoundRecorder;
 import com.obnoxx.androidapp.SoundRecordingException;
+import com.obnoxx.androidapp.data.ContactGroup;
 import com.obnoxx.androidapp.data.Sound;
 import com.obnoxx.androidapp.requests.AddSoundRequest;
 
@@ -24,8 +24,10 @@ import com.obnoxx.androidapp.requests.AddSoundRequest;
  */
 public class RecordSoundFragment extends Fragment {
     private static final String TAG = "RecordSoundFragment";
+    public static final String STATE_CONTACT_GROUP = "s";
     public static final int RESULT_CONTACTS_PICKED = 1;
 
+    private ContactGroup mContactGroup = null;
     private SoundRecorder mSoundRecorder;
 
     @Override
@@ -38,24 +40,36 @@ public class RecordSoundFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.record_sound_fragment, parent, false);
 
+        mContactGroup = (savedInstanceState == null) ?
+                ContactGroup.get(this.getActivity()) :
+                (ContactGroup) savedInstanceState.getParcelable(STATE_CONTACT_GROUP);
+        ((ContactGroupView) v.findViewById(R.id.contact_group_view))
+                .setText(mContactGroup.toString());
         setButtonHandlers(v);
 
         return v;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(STATE_CONTACT_GROUP, mContactGroup);
+    }
+
     private void setButtonHandlers(View v) {
-        ((Button) v.findViewById(R.id.btnRecord)).setOnClickListener(onClickListener);
-        ((Button) v.findViewById(R.id.btnPlay)).setOnClickListener(onClickListener);
-        ((Button) v.findViewById(R.id.btnSend)).setOnClickListener(onClickListener);
-        ((Button) v.findViewById(R.id.button_profile)).setOnClickListener(onClickListener);
-        ((Button) v.findViewById(R.id.button_choose_people)).setOnClickListener(onClickListener);
+        ((Button) v.findViewById(R.id.record_button)).setOnClickListener(onClickListener);
+        ((Button) v.findViewById(R.id.play_button)).setOnClickListener(onClickListener);
+        ((Button) v.findViewById(R.id.send_button)).setOnClickListener(onClickListener);
+        ((Button) v.findViewById(R.id.profile_button)).setOnClickListener(onClickListener);
+        ((ContactGroupView) v.findViewById(R.id.contact_group_view))
+                .setOnClickListener(onClickListener);
     }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.btnRecord:
+                case R.id.record_button:
                     try {
                         mSoundRecorder.start();
                     } catch (SoundRecordingException e) {
@@ -63,24 +77,24 @@ public class RecordSoundFragment extends Fragment {
                     }
                     break;
 
-                case R.id.btnPlay:
+                case R.id.play_button:
                     play();
                     break;
 
-                case R.id.btnSend:
+                case R.id.send_button:
                     send();
                     break;
 
-                case R.id.button_profile:
+                case R.id.profile_button:
                     startActivity(new Intent(RecordSoundFragment.this.getActivity(),
                             ProfileActivity.class));
                     break;
 
-                case R.id.button_choose_people:
-                    startActivityForResult(
-                            new Intent(RecordSoundFragment.this.getActivity(),
-                                    ContactPickerActivity.class),
-                            RESULT_CONTACTS_PICKED);
+                case R.id.contact_group_view:
+                    Intent intent = new Intent(RecordSoundFragment.this.getActivity(),
+                            ContactPickerActivity.class);
+                    intent.putExtra(ContactPickerActivity.INITIAL_CONTACT_GROUP, mContactGroup);
+                    startActivityForResult(intent, RESULT_CONTACTS_PICKED);
                     break;
             }
         }
@@ -97,28 +111,19 @@ public class RecordSoundFragment extends Fragment {
     private void send() {
         Sound sound = mSoundRecorder.getLastSound();
         if (sound != null) {
-            AddSoundRequest t = new AddSoundRequest(
-                    this.getActivity(), sound, getSelectedPhoneNumber());
+            AddSoundRequest t = new AddSoundRequest(this.getActivity(), sound, mContactGroup);
             t.execute();
         }
-    }
-
-    private String getSelectedPhoneNumber() {
-        if (((RadioButton) getActivity().findViewById((R.id.radio_jon))).isChecked()) {
-            return "+14157068528";
-        } else if (((RadioButton) getActivity().findViewById((R.id.radio_chandra))).isChecked()) {
-            return "+16507205269";
-        } else if (((RadioButton) getActivity().findViewById((R.id.radio_oliver))).isChecked()) {
-            return "+14153163345";
-        }
-        throw new IllegalStateException("Should not happen");
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RecordSoundFragment.RESULT_CONTACTS_PICKED &&
                 resultCode == Activity.RESULT_OK) {
-            Bundle results = data.getBundleExtra(ContactPickerFragment.RESULT_RESULTS);
-
+            mContactGroup.copyFrom((ContactGroup)
+                    data.getParcelableExtra(ContactPickerFragment.RESULT_CONTACT_GROUP));
+            ((ContactGroupView) this.getView().findViewById(R.id.contact_group_view))
+                    .setText(mContactGroup.toString());
+            mContactGroup.save(this.getActivity());
         }
     }
 }

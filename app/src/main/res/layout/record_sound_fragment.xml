@@ -20,65 +20,45 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btnRecord"
+                android:id="@+id/record_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/record" />
 
             <Button
-                android:id="@+id/btnPlay"
+                android:id="@+id/play_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/play" />
         </LinearLayout>
 
-        <RadioGroup
-            android:layout_width="fill_parent"
+        <com.obnoxx.androidapp.ui.ContactGroupView
+            android:id="@+id/contact_group_view"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/radio_group1">
-            <RadioButton
-                android:id="@+id/radio_jon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Jon"
-                android:checked="true"
-                android:textColor="#f00"/>
-            <RadioButton
-                android:id="@+id/radio_chandra"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chandra"
-                android:textColor="#0f0" />
-            <RadioButton
-                android:id="@+id/radio_oliver"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Oliver"
-                android:textColor="#00f" />
-        </RadioGroup>
+            android:textSize="20dp"
+            android:paddingTop="30dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="30dp"
+            android:paddingLeft="5dp"
+            android:text="Choose people ..." />
 
         <Button
-            android:id="@+id/btnSend"
+            android:id="@+id/send_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Send" />
 
         <Button
-            android:id="@+id/button_profile"
+            android:id="@+id/profile_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginTop="100dp"
             android:text="View my history" />
-        <Button
-            android:id="@+id/button_choose_people"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Choose people" />
+
     </LinearLayout>
 </FrameLayout>

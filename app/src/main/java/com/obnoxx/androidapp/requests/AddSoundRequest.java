@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.obnoxx.androidapp.CurrentUser;
+import com.obnoxx.androidapp.data.ContactGroup;
 import com.obnoxx.androidapp.data.Sound;
 
 import org.apache.http.HttpResponse;
@@ -29,15 +30,15 @@ public class AddSoundRequest extends AsyncTask<Void, Void, String> {
 
     private final Context mContext;
     private final Sound mSound;
-    private final String mPhoneNumber;
+    private final ContactGroup mContactGroup;
 
     // TODO(jonemerson): The API for this class should NOT take a Sound.  A Sound should only be
     // created on the server-side.  This constructor should just take the sound file and recipient,
     // then update the database with the Sound it gets back from the server.
-    public AddSoundRequest(Context context, Sound sound, String phoneNumber) {
+    public AddSoundRequest(Context context, Sound sound, ContactGroup contactGroup) {
         mContext = context;
         mSound = sound;
-        mPhoneNumber = phoneNumber;
+        mContactGroup = contactGroup;
     }
 
     @Override
@@ -49,7 +50,7 @@ public class AddSoundRequest extends AsyncTask<Void, Void, String> {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
         builder.addPart("soundFile", new FileBody(new File(mSound.getData().getLocalFilePath())));
-        builder.addTextBody("phoneNumber", mPhoneNumber);
+        builder.addTextBody("phoneNumbers", mContactGroup.getPhoneNumbersString());
         builder.addTextBody("sessionId", CurrentUser.getSessionId(mContext));
         post.setEntity(builder.build());
 

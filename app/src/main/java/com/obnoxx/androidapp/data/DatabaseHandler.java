@@ -13,7 +13,7 @@ import android.util.Log;
 public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHandler";
     private static final String DATABASE_NAME = "obnoxx_database";
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 11;
 
     // Database definitions.
     public static final String CURSOR_ID = "_id";
@@ -24,9 +24,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        UserData.onCreate(sqLiteDatabase);
+        ContactData.onCreate(sqLiteDatabase);
         SoundData.onCreate(sqLiteDatabase);
         SoundDeliveryData.onCreate(sqLiteDatabase);
+        UserData.onCreate(sqLiteDatabase);
     }
 
     @Override

@@ -12,16 +12,18 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.obnoxx.androidapp.R;
+import com.obnoxx.androidapp.data.ContactData;
+import com.obnoxx.androidapp.data.ContactGroup;
 
 public class ContactPickerListAdapter extends CursorAdapter {
     private static final String TAG = "ContactPickerListAdapter";
     private final Activity mActivity;
-    private final ContactPickerModel mModel;
+    private final ContactGroup mContactGroup;
 
-    public ContactPickerListAdapter(Activity activity, ContactPickerModel model) {
+    public ContactPickerListAdapter(Activity activity, ContactGroup contactGroup) {
         super(activity, /* cursor */ null, 0);
         mActivity = activity;
-        mModel = model;
+        mContactGroup = contactGroup;
     }
 
     @Override
@@ -35,7 +37,7 @@ public class ContactPickerListAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, final Cursor cursor) {
         // Top-level.
-        boolean isSelected = mModel.isSelected(cursor.getString(cursor.getColumnIndex(
+        boolean isSelected = mContactGroup.contains(cursor.getString(cursor.getColumnIndex(
                 ContactsContract.Contacts._ID)));
         view.setTag(new Integer(cursor.getPosition()));
         view.setSelected(isSelected);
@@ -65,14 +67,15 @@ public class ContactPickerListAdapter extends CursorAdapter {
                 checkBox.setChecked(!wasChecked);
                 view.setSelected(!wasChecked);
                 if (wasChecked) {
-                    mModel.deselect(id);
+                    mContactGroup.remove(id);
                 } else {
-                    mModel.setSelected(new Contact(id,
-                            cursor.getString(cursor.getColumnIndex(
-                                    ContactsContract.Contacts.DISPLAY_NAME)),
-                            cursor.getString(cursor.getColumnIndex(
-                                    ContactsContract.CommonDataKinds.Phone.NUMBER))
-                    ));
+                    mContactGroup.add(new ContactData.Builder()
+                            .setId(id)
+                            .setName(cursor.getString(cursor.getColumnIndex(
+                                    ContactsContract.Contacts.DISPLAY_NAME)))
+                            .setPhoneNumber(cursor.getString(cursor.getColumnIndex(
+                                    ContactsContract.CommonDataKinds.Phone.NUMBER)))
+                            .build());
                 }
             }
         });
